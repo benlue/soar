@@ -1,0 +1,8 @@
+{
+	"host"     : "192.168.1.190",
+	"database" : "coim",
+	"user"     : "admin",
+	"password" : "GocharmNode58",
+	"supportBigNumbers" : true,
+	"connectionLimit"   : 512
+}
