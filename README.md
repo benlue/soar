@@ -79,7 +79,7 @@ If you expect your query would return exactly one entity, you can use:
     
 The **options** parameter could have the following properties:
 
-+ **dvml**: a data view definition. SOAR will translate a data view definition into the actual SQL command. This property is required.
++ **vfile**: a data view definition. SOAR will translate a data view definition into the actual SQL command. This property is required.
 
 + **params**: the query condition. For exmaple, if you want to query users whose first name is "John", then **params** shoud be like {firsName: 'John'}. If **params** is missing, there would be no query conditions.
 
@@ -112,7 +112,7 @@ If your query would return multiple entities, you can use:
     
 The **options** parameter could have the following properties:
 
-+ **dvml**: a data view definition. SOAR will translate a data view definition into the actual SQL command. This property is required.
++ **vfile**: a data view definition. SOAR will translate a data view definition into the actual SQL command. This property is required.
 
 + **params**: the query condition. For exmaple, if you want to query users whose first name is "John", then **params** shoud be like {firsName: 'John'}. If **params** is missing, there would be no query conditions.
 
