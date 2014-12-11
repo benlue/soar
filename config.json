@@ -3,7 +3,7 @@
 		"host"     : "127.0.0.1",
 		"database" : "soar",
 		"user"     : "root",
-		"password" : "xxxx",
+		"password" : "xxxxxxxx",
 		"supportBigNumbers" : true,
 		"connectionLimit"   : 64
 	}
