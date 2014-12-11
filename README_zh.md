@@ -53,7 +53,7 @@ SOAR 是一個資料庫存取工具，讓開發者可以用物件的方式存取
 ####程式中直接設定
 開發者也可以在程式中直接設定資料庫的相關參數如下例：
 
-    var  soar = require('soar');
+    var  soar = require('soarjs');
     var  options = {
                 dbConfig: {
                     "host"     : "127.0.0.1",
@@ -398,7 +398,7 @@ SOAR 是一個資料庫存取工具，讓開發者可以用物件的方式存取
 
 以下是個簡單的範例
 
-    var  soar = require('soar');
+    var  soar = require('soarjs');
     
     soar.getConnection( function(err, conn) {
         if (err)

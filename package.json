@@ -1,5 +1,5 @@
 {
-  "name": "soar",
+  "name": "soarjs",
   "version": "1.0.0",
   "description": "A simple relational DB to entity mapper.",
   "engines": "0.10.21",

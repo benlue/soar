@@ -51,7 +51,7 @@ where **host** is the database host and **database** is the database name. **use
 #### Config Programmatically
 You can configure the database connection settings right inside your node program. Here is how:
 
-    var  soar = require('soar');
+    var  soar = require('soarjs');
     var  options = {
                 dbConfig: {
                     "host"     : "127.0.0.1",
@@ -402,7 +402,7 @@ Using **-f** to designate you DB configuration file. By doing so, you'll have al
 ### How To Do Transactions
 Below is the sample code:
 
-    var  soar = require('soar');
+    var  soar = require('soarjs');
     
     soar.getConnection( function(err, conn) {
         if (err)
