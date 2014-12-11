@@ -1,8 +1,10 @@
 {
-	"host"     : "192.168.1.190",
-	"database" : "coim",
-	"user"     : "admin",
-	"password" : "GocharmNode58",
-	"supportBigNumbers" : true,
-	"connectionLimit"   : 512
+	"dbConfig": {
+		"host"     : "127.0.0.1",
+		"database" : "soar",
+		"user"     : "root",
+		"password" : "xxxx",
+		"supportBigNumbers" : true,
+		"connectionLimit"   : 64
+	}
 }

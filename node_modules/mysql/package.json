@@ -1,0 +1,106 @@
+{
+  "name": "mysql",
+  "description": "A node.js driver for mysql. It is written in JavaScript, does not require compiling, and is 100% MIT licensed.",
+  "version": "2.5.3",
+  "license": "MIT",
+  "author": {
+    "name": "Felix Geisendörfer",
+    "email": "felix@debuggable.com",
+    "url": "http://debuggable.com/"
+  },
+  "contributors": [
+    {
+      "name": "Andrey Sidorov",
+      "email": "sidorares@yandex.ru"
+    },
+    {
+      "name": "Douglas Christopher Wilson",
+      "email": "doug@somethingdoug.com"
+    },
+    {
+      "name": "Diogo Resende",
+      "email": "dresende@thinkdigital.pt"
+    }
+  ],
+  "homepage": "https://github.com/felixge/node-mysql",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/felixge/node-mysql"
+  },
+  "dependencies": {
+    "bignumber.js": "1.4.1",
+    "readable-stream": "~1.1.13",
+    "require-all": "0.0.8"
+  },
+  "devDependencies": {
+    "istanbul": "0.3.2",
+    "rimraf": "2.2.8",
+    "mkdirp": "0.5.0",
+    "urun": "0.0.8",
+    "utest": "0.0.8"
+  },
+  "engines": {
+    "node": ">= 0.6"
+  },
+  "scripts": {
+    "test": "node test/run.js",
+    "test-cov": "node test/run-cov.js",
+    "test-travis": "node test/run-cov.js lcovonly"
+  },
+  "gitHead": "9d7b4868d37a8ede0a14fdd573c1053a6feb1dd8",
+  "bugs": {
+    "url": "https://github.com/felixge/node-mysql/issues"
+  },
+  "_id": "mysql@2.5.3",
+  "_shasum": "82dd5c9e9831e7ffe2466d347c8c1dfcfcece23b",
+  "_from": "mysql@",
+  "_npmVersion": "1.4.21",
+  "_npmUser": {
+    "name": "dougwilson",
+    "email": "doug@somethingdoug.com"
+  },
+  "maintainers": [
+    {
+      "name": "felixge",
+      "email": "felix@debuggable.com"
+    },
+    {
+      "name": "egorfine",
+      "email": "me@egorfine.com"
+    },
+    {
+      "name": "dresende",
+      "email": "dresende@thinkdigital.pt"
+    },
+    {
+      "name": "femto113",
+      "email": "ken.woodruff@gmail.com"
+    },
+    {
+      "name": "nate.lillich",
+      "email": "nate@lifewanted.com"
+    },
+    {
+      "name": "tolgaek",
+      "email": "tolga.ekmen@gmail.com"
+    },
+    {
+      "name": "sidorares",
+      "email": "sidorares@yandex.com"
+    },
+    {
+      "name": "seanmonstar",
+      "email": "sean.monstar@gmail.com"
+    },
+    {
+      "name": "dougwilson",
+      "email": "doug@somethingdoug.com"
+    }
+  ],
+  "dist": {
+    "shasum": "82dd5c9e9831e7ffe2466d347c8c1dfcfcece23b",
+    "tarball": "http://registry.npmjs.org/mysql/-/mysql-2.5.3.tgz"
+  },
+  "directories": {},
+  "_resolved": "https://registry.npmjs.org/mysql/-/mysql-2.5.3.tgz"
+}

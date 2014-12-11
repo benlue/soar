@@ -1,0 +1,13 @@
+<db_view>
+	<table name="PsnLoc" />
+
+	<fields>
+		<field name="geID"	/>
+		<field name="psnID"	/>
+	</fields>
+
+	<filter>
+		<filter name="geID"	/>
+		<filter name="psnID"	/>
+	</filter>
+</db_view>

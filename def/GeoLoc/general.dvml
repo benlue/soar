@@ -1,0 +1,17 @@
+<db_view>
+	<table name="GeoLoc" />
+
+	<fields>
+		<field name="geID"	/>
+		<field name="addr"	/>
+		<field name="latitude"	/>
+		<field name="longitude"	/>
+	</fields>
+
+	<filter>
+		<filter name="geID"	/>
+		<filter name="addr"	/>
+		<filter name="latitude"	/>
+		<filter name="longitude"	/>
+	</filter>
+</db_view>
