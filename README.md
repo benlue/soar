@@ -18,7 +18,7 @@ Maybe what developers need is just a light-weight solution to harness SQL. Consi
 So, here comes SOAR.
 
 ## Usage
-Below are short cuts to import sections of this guide:
+Below are short cuts to important sections of this guide:
 
 + [DB Settings](#dbSetup)
 + [Query](#query)
