@@ -17,6 +17,10 @@ Maybe what developers need is just a light-weight solution to harness SQL. Consi
 
 So, here comes SOAR.
 
+## Installation
+
+    npm install soarjs
+
 ## Usage
 Below are short cuts to important sections of this guide:
 
