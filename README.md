@@ -225,7 +225,7 @@ Below is an example:
 #### Delete<a name="delete"></a>
 Below is how to delete entries in a table:
 
-    soar.delete(options, callback);
+    soar.del(options, callback);
     
 The **options** parameter could have the following properties:
 
