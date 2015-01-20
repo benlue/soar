@@ -4,7 +4,7 @@ var  assert = require('assert'),
      soar = require('../lib/soar.js');
 
 var  dbUser = 'root',
-     rightPasswd = '........',
+     rightPasswd = 'your_passwd_here',
      wrongPasswd = 'xxxx';
 
 //soar.setDebug( true );
@@ -28,7 +28,7 @@ describe('Test configuration and settings', function()  {
                 "user"     : dbUser,
                 "password" : wrongPasswd,
                 "supportBigNumbers" : true,
-                "connectionLimit"   : 64
+                "connectionLimit"   : 32
             }
         };
         soar.config( options );
@@ -46,7 +46,7 @@ describe('Test configuration and settings', function()  {
                 "user"     : dbUser,
                 "password" : rightPasswd,
                 "supportBigNumbers" : true,
-                "connectionLimit"   : 64
+                "connectionLimit"   : 32
             }
         };
         soar.config( options );

@@ -1,10 +1,10 @@
-{
+[{
 	"dbConfig": {
 		"host"     : "127.0.0.1",
 		"database" : "soar",
 		"user"     : "root",
-		"password" : "xxxxxxxx",
+		"password" : "xxxxxx",
 		"supportBigNumbers" : true,
-		"connectionLimit"   : 64
+		"connectionLimit"   : 32
 	}
-}
+}]

@@ -1,5 +1,4 @@
 var  assert = require('assert'),
-     dbConn = require('../lib/dbConn.js'),
      path = require('path'),
      soar = require('../lib/soar.js');
 

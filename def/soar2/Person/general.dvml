@@ -1,0 +1,14 @@
+<db_view>
+	<table name="Person" />
+
+	<fields>
+		<field name="psnID"	/>
+		<field name="name"	/>
+		<field name="addr"	/>
+	</fields>
+
+	<filter>
+		<filter name="psnID"	/>
+		<filter name="name"	/>
+	</filter>
+</db_view>

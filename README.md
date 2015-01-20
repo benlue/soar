@@ -1,9 +1,9 @@
 #SOAR
 ## What Is SOAR
-SOAR (Simple Object Adapter for Relational data) is a relational database access tool. It allows developers to access database with/as Javascript objects. It also allows developers to have precise control of how database is accessed. SOAR offers some benefits of ORM and tries to avoid its overhead and problems.
+SOAR (Simple Object Adapter for Relational database) is a relational database access tool. It allows developers to access database with/as Javascript objects. It also gives back developers the power to precisely control how database is accessed. SOAR offers some benefits of ORM and tries to avoid its overhead and problems.
 
 ## Why SOAR
-Most developers would agree it's not a good idea to compose SQL inside programs. It's tedious and error-prone. So there comes ORM which was intended to provide a cleaner programming model. Unfortunately, ORM could turn into a monster if the DB schema is full of references.
+Most developers would agree it's not a good idea to compose SQL statements inside programs. It's tedious and error-prone. So there comes ORM which was intended to provide a cleaner programming model. Unfortunately, ORM could turn into a monster if the DB schema is full of references.
 
 Maybe what developers need is just a light-weight solution to harness SQL. Consider a DB access tool with the following feaures:
 
@@ -11,9 +11,11 @@ Maybe what developers need is just a light-weight solution to harness SQL. Consi
 
 + Unlike most ORM solutions, you have complete control of how SQL is generated and applied.
 
-+ You can name a SQL command or even formulate it into a file. You can later use that SQL by just referring its name.
++ You can name a SQL statement or even formulate it into a file. You can later use that SQL statement by just referring its name.
 
-+ Composing the SQL WHERE clause inside programs is so tedious and error-prone. Is there a tool to dynamically generate a SQL command based on query conditions?
++ A simple way to access multiple databases within an application.
+
++ Composing the SQL WHERE clause inside programs is so tedious and error-prone. Is there a tool to dynamically generate SQL statements based on query conditions?
 
 So, here comes SOAR.
 
@@ -48,13 +50,16 @@ Right beneath the SOAR installation directory, there is a **config.json** file w
     		"user"     : "myDB_acc_name",
     		"password" : "xxxx",
     		"supportBigNumbers" : true,
-    		"connectionLimit"   : 64
-    	}
+    		"connectionLimit"   : 32
+    	},
+    	"defPath": "file_path_to_the_data_view_files"
     }
     
-where **host** is the database host and **database** is the database name. **user** and **password** are the database user name and password respectively. SOAR refer to the _mysql_ node module as its mySQL driver and SOAR turns on the connection pool feature by default.
+where **host** is the database host and **database** is the database name. **user** and **password** are the database user name and password respectively. SOAR ueses the _mysql_ node module as its mySQL driver and the connection pool feature is turned on by default.
 
-#### Config Programmatically
+**defPath** is the file directory where data view files of a database are saved. For details about what are data view files, please refer to [this section](#dvml).
+
+#### Configure Programmatically
 You can configure the database connection settings right inside your node program. Here is how:
 
     var  soar = require('soarjs');
@@ -65,12 +70,44 @@ You can configure the database connection settings right inside your node progra
                     "user"     : "myDB_acc_name",
                     "password" : "xxxx",
                     "supportBigNumbers" : true,
-                    "connectionLimit"   : 64
+                    "connectionLimit"   : 32
                 }
          };
          
     soar.config( options );
     
+#### Multiple Databases Configuration
+Using SOAR to access multiple databases can be extremely easy, but first you have to configure SOAR to connect to multiple databases. It turns out that is quite simple, too.
+
+In your **config.json** file, use an array of options instead of a single configuration option with each option specifying the settings of each database. Below is an example:
+
+	[
+    {
+    	"dbConfig": {
+    		"host"     : "127.0.0.1",
+    		"database" : "db_1",
+    		"user"     : "db1_acc_name",
+    		"password" : "xxxx",
+    		"supportBigNumbers" : true,
+    		"connectionLimit"   : 32
+    	},
+    	"defPath": "file_path_to_the_data_view_files_of_db1"
+    },
+    {
+    	"dbConfig": {
+    		"host"     : "127.0.0.1",
+    		"database" : "db_2",
+    		"user"     : "db2_acc_name",
+    		"password" : "xxxx",
+    		"supportBigNumbers" : true,
+    		"connectionLimit"   : 32
+    	},
+    	"defPath": "file_path_to_the_data_view_files_of_db2"
+    }
+    ]
+    
+If you need to connect to 10 databases in your application, then the configuration array should have 10 elements. Configuring multiple databases programmatically can be done in a similar way.
+
 ### Access Database
 Below I'll explain how to do query, insert, update and delete using SOAR:
 
@@ -107,6 +144,15 @@ Below is an example:
         			 JSON.stringify(data) );
     });
     
+**Access Multiple Databases**
+
+If SOAR is configured to access multiple databases in an application, the database name should be prefixed to the vfile (so that SOAR could know which database it should talke to) as shown below:
+
+    var  options = {
+                vfile: 'dbName.Person/general.dvml',
+                params: {psnID: 1}
+         };
+
 #### Query for A List<a name="list"></a>
 If your query would return multiple entities, you can use:
 
@@ -142,6 +188,15 @@ Below is an example:
                     list.length );
     });
     
+**Access Multiple Databases**
+
+If SOAR is configured to access multiple databases in an application, the database name should be prefixed to the vfile (so that SOAR could know which database it should talke to) as shown below:
+
+    var  options = {
+                vfile: 'dbName.Person/general.dvml',
+                params: {name: 'David %'}
+         };
+         
 **Applying Pagination**
 
 If a query result contains too many records, you can apply pagination to receive a portion of the whole result. The following sample code shows how to get the 21th to 30th data records in a query:
@@ -190,6 +245,15 @@ Below is an example:
         console.log('The numeric ID of Scott Cooper is %d', psnID);
     });
     
+**Access Multiple Databases**
+
+If SOAR is configured to access multiple databases in an application, the database name should be prefixed to the vfile (so that SOAR could know which database it should talke to) as shown below:
+
+    var  options = {
+                entity: 'dbName.Person',
+                data: {name: 'Scott Cooper'}
+         };
+         
 #### Update<a name="update"></a>
 Below is how you can update a table:
 
@@ -222,6 +286,16 @@ Below is an example:
             console.log('The #1 person whose name has been changed.');
     });
     
+**Access Multiple Databases**
+
+If SOAR is configured to access multiple databases in an application, the database name should be prefixed to the vfile (so that SOAR could know which database it should talke to) as shown below:
+
+    var  options = {
+                entity: 'dbName.Person',
+                data: {name: 'John Cooper'},
+                terms: {psnID: 1}
+         };
+         
 #### Delete<a name="delete"></a>
 Below is how to delete entries in a table:
 
@@ -251,6 +325,15 @@ Below is an example:
             console.log('The #1 person has been deleted.');
     });
     
+**Access Multiple Databases**
+
+If SOAR is configured to access multiple databases in an application, the database name should be prefixed to the vfile (so that SOAR could know which database it should talke to) as shown below:
+
+    var  options = {
+                entity: 'dbName.Person',
+                terms: {psnID: 1}
+         };
+         
 ### Data View Definition<a name="dvml"></a>
 A data view definition (DV) reorgranizes a SQL command into a more readable XML format. The result file has the .dvml postfix which stands for Data View Markup Language. Below is what a DV file would look like:
 
@@ -438,6 +521,12 @@ Below is the sample code:
     });
     
 Remember to pass the database connection obtained from the _soar.getConnection()_ call to the DB access function calls by setting the connection into the **options.conn** attribute.
+
+If your application is connected to multiple database at the same time, remember to specify the database name as the second parameter to the _getConnetion()_ function as below:
+
+    soar.getConnection(function(err, conn) {
+    	// do your stuff here
+    }, 'db_name');
 
 ### Debug Messages<a name="debug"></a>
 If you want to know what SQLs are actually generated by SOAR, you can turn on debug messages as shown below:
