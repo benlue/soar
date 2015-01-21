@@ -109,10 +109,10 @@ In your **config.json** file, use an array of options instead of a single config
 
 If you need to connect to 10 databases in your application, then the configuration array should have 10 elements. Configuring multiple databases programmatically can be done in a similar way.
 
-As to how to access each specific database in a multi-databases scenario, it will be explained in each database access action (query, list, create, update and delete) below.
+How to access each database in a multi-databases scenario will be explained in each database access method (query, list, create, update and delete) below.
 
 ### Access Database
-Below I'll explain how to do query, insert, update and delete using SOAR:
+How to do query, list, insert, update and delete using SOAR is shown below.
 
 #### Query for A Single Entity<a name="query"></a>
 If you expect your query would return exactly one entity, you can use:
