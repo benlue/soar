@@ -302,7 +302,7 @@ If SOAR is configured to access multiple databases in an application, the databa
 #### Delete<a name="delete"></a>
 Below is how to delete entries in a table:
 
-    soar.delete(options, callback);
+    soar.del(options, callback);
     
 The **options** parameter could have the following properties:
 
@@ -542,4 +542,8 @@ That will display generated SQL along with other debug information in console.
 The SOAR package comes with some test files. To run those tests, sample data have to be built first. Inside the SOAR istallation, there is a "def" directory which includes schema.sql and sampleData.sql. Those two files can be used to build the sample data. In addition, you have to modify your config.json file and the related database settings in the test prorams.
 
 ## Database Supported
+<<<<<<< HEAD
 In the current release, SOAR only supports mySQL. If you want to use SOAR for other databases such as Postgre, MS SQL server or Oracle DB, etc, you'll have to write your own SQL generator. Right now SQL generation is implemented by ./lib/sqlGenMySql.js. If anyone is interested in contributing SQL generators of other DBs, it's certainly welcome.
+=======
+In the current release, SOAR only supports mySQL. If you want to use SOAR for other databases such as Postgre, MS SQL server or Oracle DB, etc, you'll have to write your own SQL generator. Right now SQL generation is done by the ./lib/sqlGenMySql.js program. It's very welcome if anyone likes to contribute SQL generators for other DBs.
+>>>>>>> 64ee335ee2c52eac3cd59e9165f06e5228fc49c7
