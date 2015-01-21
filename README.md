@@ -58,7 +58,7 @@ Right beneath the SOAR installation directory, there is a **config.json** file w
 
 where **host** is the database host and **database** is the database name. **user** and **password** are the database user name and password respectively. SOAR ueses the _mysql_ node module as its mySQL driver and the connection pool feature is turned on by default.
 
-**defPath** is the file directory where data view files of a database are saved. For details about what are data view files, please refer to [this section](#dvml).
+**defPath** is the file directory where data view files of a database are saved. For details about what data view files are, please refer to [this section](#dvml).
 
 #### Configure Programmatically
 You can configure the database connection settings right inside your node program. Here is how:
