@@ -1,15 +1,17 @@
 # SOAR
 ## 什麼是SOAR
-SOAR 是一個資料庫存取工具，讓開發者可以用物件的方式存取資料庫資料，並且明確清楚的知道程式如何存取資料。SOAR 讓開發者享有一部分 ORM 的便利，但避免了 ORM 的諸多缺點。
+SOAR 是一個資料庫存取工具，讓開發者可以用物件的方式存取資料庫資料，並且明確清楚的知道程式如何存取資料。SOAR 讓開發者享有一部分 ORM 的便利，但避免了 ORM 的諸多缺點。此外，SOAR 也可以協助你以非常簡單的方式在程式中同時存取多個資料庫。
 
 ## 為什麼需要 SOAR:
-在程式中組合 SQL 是一件很不方便的事。既容易出錯，又不容易維護。後來有ORM的出現，讓程式的撰寫可以比較乾淨。可是ORM本身也可以搞的很複雜，尤其是資料庫中個資料表的關聯性不是很單純時。其實開發者所需要的，也許只是一個有效管理 SQL 的方法，但不要像 ORM 一樣會完全接管開發者對資料庫的存取行為。
+在程式中組合 SQL 是一件很不方便的事。既容易出錯，又不容易維護。後來有ORM的出現，讓程式的撰寫可以比較乾淨。可是ORM本身也可以搞的很複雜，尤其是資料庫中資料表間的關聯性稍微有點複雜時。其實開發者所需要的，也許只是一個有效管理 SQL 的方法，但不要像 ORM 一樣會完全接管開發者對資料庫的存取行為。
 
 想像一個關聯式資料庫的程式庫（node.js 模組）提供了以下的功能：
 
 + 可以對資料庫的查詢結果直接變成一個 Javascript 物件（單筆結果）或是陣列（多筆）。要更新資料時，則可以把一個 Javascript 物件直接寫回資料庫。
 
 + 與 ORM 不同的是，開發者可以完全控制最後產出的 SQL，以方便維護、除錯管理甚至效能調校。
+
++ 可以讓開發者很簡易的在程式中同時對多個資料庫進行存取。
 
 + 為 SQL 指令取一個名字或代號，甚至將它變成一個獨立的檔案，以方便維護管理以及重複使用。
 
@@ -27,6 +29,7 @@ SOAR 是一個資料庫存取工具，讓開發者可以用物件的方式存取
 以下是個簡易目錄：
 
 + [資料庫設定](#dbSetup)
++ [同時存取多個資料庫](#multidb)
 + [查詢單筆資料](#query)
 + [查詢多筆資料](#list)
 + [新增資料](#insert)
@@ -50,11 +53,14 @@ SOAR 是一個資料庫存取工具，讓開發者可以用物件的方式存取
     		"user"     : "myDB_acc_name",
     		"password" : "xxxx",
     		"supportBigNumbers" : true,
-    		"connectionLimit"   : 64
-    	}
+    		"connectionLimit"   : 32
+    	},
+    	"defPath": "file_path_to_the_data_view_files"
     }
 
 其中 **host** 代表資料庫所在的主機位置，**database** 則是資料庫的名稱。**user** 和 **password** 分別代表帳號名稱和密碼。SOAR 使用了 _mysql_ 這個 node 的模組，並自動（預設）啟動了  conntection pool 的功能。
+
+**defPath** 是用來存放資料定義檔的目錄。關於資料定義檔的詳情，請參考[這裡](#dvml)。
 
 ####程式中直接設定
 開發者也可以在程式中直接設定資料庫的相關參數如下例：
@@ -67,11 +73,43 @@ SOAR 是一個資料庫存取工具，讓開發者可以用物件的方式存取
                     "user"     : "myDB_acc_name",
                     "password" : "xxxx",
                     "supportBigNumbers" : true,
-                    "connectionLimit"   : 64
+                    "connectionLimit"   : 32
                 }
          };
          
     soar.config( options );
+
+#### 同時存取多個資料庫<a name="multidb""></a>
+使用 SOAR 來同時存取多個資料庫是非常簡單的。首先你必須在設定檔中提供各個資料庫連線設定的陣列。因為要連線多個資料庫，所以設定資料成了陣列。陣列中每一筆設定資料對應到一個資料庫。以下是設定多個資料庫的 **config.json** 檔範例：
+
+    [
+    {
+    	"dbConfig": {
+    		"host"     : "127.0.0.1",
+    		"database" : "db_1",
+    		"user"     : "db1_acc_name",
+    		"password" : "xxxx",
+    		"supportBigNumbers" : true,
+    		"connectionLimit"   : 32
+    	},
+    	"defPath": "file_path_to_the_data_view_files_of_db1"
+    },
+    {
+    	"dbConfig": {
+    		"host"     : "127.0.0.1",
+    		"database" : "db_2",
+    		"user"     : "db2_acc_name",
+    		"password" : "xxxx",
+    		"supportBigNumbers" : true,
+    		"connectionLimit"   : 32
+    	},
+    	"defPath": "file_path_to_the_data_view_files_of_db2"
+    }
+    ]
+    
+如果你是使用程式直接設定，作法是類似的。只需將資料庫的設定參數放進陣列即可。
+
+至於如何對多個資料庫下指令，在以下各種存取指令（query, list, create, update, delete）的介紹中會說明。
 
 ### 存取資料庫
 依照對資料庫執行的動作，SOAR 提供了對應的功能：
@@ -109,6 +147,15 @@ SOAR 是一個資料庫存取工具，讓開發者可以用物件的方式存取
         			 JSON.stringify(data) );
     });
     
+**多重資料庫存取**
+
+要在程式中同時存取多個資料庫的話，就要在資料表定義檔的路徑加上資料庫名稱的前置詞，這樣 SOAR 才知道你要對哪個資料庫下指令。以下是做單筆查詢時的範例：
+
+    var  options = {
+                vfile: 'dbName.Person/general.dvml',
+                params: {psnID: 1}
+         };
+    
 ####讀取多筆資料<a name="list"></a>
 若要一次讀取多筆資料，可用 soar.list() 來取得。其回傳值會放置在一個陣例中。語法如下：
 
@@ -144,6 +191,14 @@ SOAR 是一個資料庫存取工具，讓開發者可以用物件的方式存取
                     list.length );
     });
 
+**多重資料庫存取**
+
+要在程式中同時存取多個資料庫的話，就要在資料表定義檔的路徑加上資料庫名稱的前置詞，這樣 SOAR 才知道你要對哪個資料庫下指令。以下是做清單查詢時的範例：
+
+    var  options = {
+                vfile: 'dbName.Person/general.dvml',
+                params: {name: 'David %'}
+         };
 
 **將查詢結果分頁**
 
@@ -193,6 +248,15 @@ SOAR 是一個資料庫存取工具，讓開發者可以用物件的方式存取
         console.log('The numeric ID of Scott Cooper is %d', psnID);
     });
     
+**多重資料庫存取**
+
+要在程式中同時存取多個資料庫的話，就要在資料表定義檔的路徑加上資料庫名稱的前置詞，這樣 SOAR 才知道你要對哪個資料庫下指令。以下是做新增資料時的範例：
+
+    var  options = {
+                entity: 'dbName.Person',
+                data: {name: 'Scott Cooper'}
+         };
+    
 ####修改資料<a name="update"></a>
 以下是修改資料的語法：
 
@@ -225,6 +289,16 @@ SOAR 是一個資料庫存取工具，讓開發者可以用物件的方式存取
             console.log('The #1 person whose name has been changed.');
     });
     
+**多重資料庫存取**
+
+要在程式中同時存取多個資料庫的話，就要在資料表定義檔的路徑加上資料庫名稱的前置詞，這樣 SOAR 才知道你要對哪個資料庫下指令。以下是做資料修改時的範例：
+
+    var  options = {
+                entity: 'dbName.Person',
+                data: {name: 'John Cooper'},
+                terms: {psnID: 1}
+         };
+    
 ####刪除資料<a name="delete"></a>
 以下是刪除資料的語法：
 
@@ -253,6 +327,15 @@ SOAR 是一個資料庫存取工具，讓開發者可以用物件的方式存取
     	if (!err)
             console.log('The #1 person has been deleted.');
     });
+    
+**多重資料庫存取**
+
+要在程式中同時存取多個資料庫的話，就要在資料表定義檔的路徑加上資料庫名稱的前置詞，這樣 SOAR 才知道你要對哪個資料庫下指令。以下是做資料刪除時的範例：
+
+    var  options = {
+                entity: 'dbName.Person',
+                terms: {psnID: 1}
+         };
     
 ### 資料定義檔<a name="dvml"></a>
 資料定義檔把 SQL 指令以 XML 的格式加以整理，以便在執行時有更大的彈性，並且方便維護管理。資料定義檔的附屬檔名是 DVML，代表 data view markup language。以下是資料定義檔的語法示意：
@@ -434,6 +517,12 @@ SOAR 是一個資料庫存取工具，讓開發者可以用物件的方式存取
     });
     
 記得將經由 _soar.getConnection()_ 取得的 connection 傳入到 **options** 中，才回正確執行 transaction。
+
+如果你在程式中對多個資料庫進行存取，那麼在取得 connection 時就必須標明要取得哪一個資料庫的連線，如同下面這個簡單的範例所示：
+
+    soar.getConnection('db_name', function(err, conn) {
+    	// do your stuff here
+    });
 
 ### 除錯訊息<a name="debug"></a>
 如果想知道 SOAR 究竟組合出什麼樣的 SQL，可以用以下的方法將 SQL 的組合結果以及一些相關訊息輸出到 console 上：

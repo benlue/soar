@@ -19,7 +19,14 @@ if (argCount > 2)  {
     }
 }
 
-descTable.config( options );
+try  {
+    descTable.config( options );
+}
+catch (e)  {
+    console.log('Failed to read configurations.');
+    return;
+}
+
 descTable.getConnection(function(err, conn) {
     if (err)
         console.log( err );

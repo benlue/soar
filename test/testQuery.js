@@ -1,3 +1,9 @@
+/*!
+* soar
+* authors: Ben Lue
+* license: MIT License
+* Copyright(c) 2015 Gocharm Inc.
+*/
 var  assert = require('assert'),
      path = require('path'),
      soar = require('../lib/soar.js');

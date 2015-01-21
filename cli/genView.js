@@ -24,13 +24,19 @@ else  {
         }
     }
 
-    descTable.config( options );
-    descTable.describe( tableName, function(err) {
-        if (err)
-            console.log( err );
-        descTable.close( function(err) {
+    try  {
+        descTable.config( options );
+        descTable.describe( tableName, function(err) {
             if (err)
                 console.log( err );
+            descTable.close( function(err) {
+                if (err)
+                    console.log( err );
+            });
         });
-    });
+    }
+    catch (e)  {
+        console.log('Failed to read configurations.');
+        return;
+    }
 }

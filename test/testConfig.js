@@ -57,6 +57,7 @@ describe('Test configuration and settings', function()  {
         });
     });
 
+    /*
     it('Setting the wrong definition file path', function(done) {
         var  options = {
             defPath: '/usr/john'
@@ -79,4 +80,5 @@ describe('Test configuration and settings', function()  {
             done();
         });
     });
+    */
 });
