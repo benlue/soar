@@ -6,7 +6,8 @@
 */
 var  assert = require('assert'),
      path = require('path'),
-     soar = require('../lib/soar.js');
+     soar = require('../lib/soar.js'),
+     sqlComp = require('../lib/sqlComp.js');
 
 //soar.setDebug( true );
 
@@ -14,9 +15,7 @@ before(function() {
     soar.config();
 });
 
-
-describe('Test configuration and settings', function()  {
-
+describe('Test various SQL commands', function()  {
     it('Simple query', function(done) {
         soar.query('Person/general.dvml', {psnID: 1}, function(err, data) {
             assert( data, 'Missing psnID=1 data');
@@ -130,6 +129,114 @@ describe('Test configuration and settings', function()  {
             assert.equal( list.length, 3, 'Should have 3 records.');
             assert(!list[0].name, 'Name fields should have been removed.');
             done();
+        });
+    });
+});
+
+
+describe('Test dynamic query', function()  {
+    it('Simple query', function(done) {
+        var  scomp = new sqlComp('Person'),
+             expr = scomp.column(['psnID', 'name']).
+        filter( {name: 'psnID'} ).
+        value();
+
+        var  option = {
+            op: 'query',
+            expr: expr,
+            query: {psnID: 1}
+        };
+
+        soar.execute(option, function(err, data) {
+            assert( data, 'Missing psnID=1 data');
+            assert.equal( data.name, 'John', 'Person name not matched.');
+            done();
+        });
+    });
+
+    it('Simple query with alias', function(done) {
+        var  scomp = new sqlComp('Person'),
+             expr = scomp.column(['psnID', 'name AS fullName']).
+        filter( {name: 'psnID'} ).
+        value();
+
+        var  option = {
+            op: 'query',
+            expr: expr,
+            query: {psnID: 1}
+        };
+
+        soar.execute(option, function(err, data) {
+            assert( data, 'Missing psnID=1 data');
+            assert.equal( data.fullName, 'John', 'Person name not matched.');
+            done();
+        });
+    });
+
+    it('Update', function(done) {
+        var  scomp = new sqlComp('Person'),
+             expr = scomp.column(['psnID', 'name']).
+        filter( {name: 'psnID'} ).
+        value();
+
+        var  option = {
+            op: 'update',
+            expr: expr,
+            data: {name: 'John Mayer'},
+            query: {psnID: 1}
+        };
+
+        soar.execute(option, function(err) {
+            assert(!err, 'Failed to do update.');
+
+            option.op = 'query';
+            soar.execute(option, function(err, data) {
+                assert.equal( data.name, 'John Mayer', 'Person name not matched.');
+
+                // restore data
+                option.op = 'update';
+                option.data = {name: 'John'};
+                soar.execute(option, function(err) {
+                    assert(!err, 'Failed to do update.');
+                    done();
+                });
+            });
+        })
+    });
+
+    it('Insert and delete with transactions', function(done) {
+        var  scomp = new sqlComp('Person'),
+             expr = scomp.column(['psnID', 'name']).
+        filter( {name: 'psnID'} ).
+        value();
+
+        soar.getConnection( function(err, conn) {
+            conn.beginTransaction(function(err) {
+                assert(!err, 'Transaction failed to get started.');
+
+                var  option = {
+                    op: 'insert',
+                    expr: expr,
+                    data: {name: 'Scott Cooper'},
+                    conn: conn
+                };
+
+                soar.execute(option, function(err, psnID) {
+                    assert(psnID, 'Failed to insert');
+
+                    option.op = 'delete';
+                    option.query = {psnID: psnID};
+                    delete  option.data;
+
+                    soar.execute(option, function(err) {
+                        assert(!err, 'Failed to delete.');
+                        conn.commit( function(err) {
+                            assert(!err, 'Transaction failed to commit.');
+                            done();
+                        });
+                    });
+                })
+            });
         });
     });
 });

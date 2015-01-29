@@ -1,8 +1,0 @@
-1.0.1
------
-. Added support for multiple database access.
-. Command line tools such as 'genAll.js' and 'genView.js' can still work on a single database.
-
-1.0.0
------
-. Officially released

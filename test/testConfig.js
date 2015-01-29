@@ -4,7 +4,7 @@ var  assert = require('assert'),
      soar = require('../lib/soar.js');
 
 var  dbUser = 'root',
-     rightPasswd = 'your_passwd_here',
+     rightPasswd = 'my_passwd',
      wrongPasswd = 'xxxx';
 
 //soar.setDebug( true );
