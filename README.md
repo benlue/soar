@@ -130,7 +130,7 @@ SOAR offers two types of programming styles to access databases. One is via "Dat
 
 <a name="dataView"></a>
 ### Access Via Data View
-Data view is a XML file used to formulate SQL queries. By parameterizing and formulating SQL queries in XML format, SQL queries can be easily reused and managed. For details about how to use "data view" to access databases, please refer to this [article](https://github.com/benlue/soar/doc/AccessWithDataView.md).
+Data view is a XML file used to formulate SQL queries. By parameterizing and formulating SQL queries in XML format, SQL queries can be easily reused and managed. For details about how to use "data view" to access databases, please refer to this [article](https://github.com/benlue/soar/blob/master/doc/AccessWithDataView.md).
 
 <a name="dynamicSQL"></a>
 ### Dynamic SQL Composition
