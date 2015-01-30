@@ -1,21 +1,23 @@
-#SOAR
+SOAR
+====
+
 ## What Is SOAR
-SOAR (Simple Object Adapter for Relational database) is a relational database access tool. It allows developers to access database with/as Javascript objects. Unlike most ORM solutions, SOAR gives back developers the full control of how SQL statements are generated. SOAR offers some benefits of ORM and tries to avoid its overhead and problems. Also, if you need to access multiple databases in an application, SOAR would greatly simplify the task for you.
+SOAR (Simple Object Adapter for Relational database) is a relational database access tool. It allows developers to access database with/as Javascript objects. Unlike most ORM solutions, SOAR gives back to developers the full control of how SQL statements are generated. SOAR offers some benefits of ORM and tries to avoid its overhead and problems. Also, if you need to access multiple databases in an application, SOAR would greatly simplify the task for you.
 
 ## Why SOAR
 Most developers would agree it's not a good idea to compose SQL statements inside programs. It's tedious and error-prone. So there comes ORM which was intended to provide a cleaner programming model. Unfortunately, ORM could turn into a monster if the DB schema is full of references.
 
 Maybe what developers need is just a light-weight solution to harness SQL. Consider a DB access tool with the following feaures:
 
-+ Query a DB and return the value as a plain Javascript object or array of objects. If you want to insert or update a record, you can simply put the data in a Javascript object and write it out to DB.
++ Query a DB and return the value as a plain Javascript object or array of objects. If you want to insert or update a record, you can simply put data in a Javascript object and write it out to DB.
 
 + Unlike most ORM solutions, you have complete control of how SQL is generated and applied.
 
-+ You can name a SQL statement or even formulate it into a file. You can later use that SQL statement by just referring its name.
++ You can name a SQL statement or even formulate it into a file or a Javascript template. You can later invoke that SQL statement by just referring to its name (file name or template name).
 
 + A simple way to access multiple databases within an application.
 
-+ Composing the SQL WHERE clause inside programs is so tedious and error-prone. Is there a tool to dynamically generate SQL statements based on query conditions?
++ Composing the SQL WHERE clause inside programs is very tedious and error-prone. Is there a tool to dynamically generate SQL query conditions based on query values?
 
 So, here comes SOAR.
 
@@ -69,7 +71,7 @@ Right beneath the SOAR installation directory, there is a **config.json** file w
 
 where **host** is the database host and **database** is the database name. **user** and **password** are the database user name and password respectively. SOAR ueses the _mysql_ node module as its mySQL driver and the connection pool feature is turned on by default.
 
-**defPath** is the file directory where data view files of a database are saved. For details about what data view files are, please refer to [this section](#dvml).
+**defPath** is the file directory where data view files of a database are saved. For details about what data view files are, please refer to [this article](https://github.com/benlue/soar/blob/master/doc/AccessWithDataView.md).
 
 <a name="configProg"></a>
 ### Configure Programmatically
@@ -138,7 +140,7 @@ This is the other programming style SOAR supported. Dynamic SQL composition allo
 
     var  soar = require('soarjs');
     
-    var  sbi = soar.sqlComponent('Person');
+    var  sbi = soar.sqlBuildInfo('Person');
     sbi.column(['id', 'addr AS address', 'age']).
     filter( {name: 'age', op: '>='} ).
     extra( 'ORDER BY id' );
@@ -153,7 +155,7 @@ This is the other programming style SOAR supported. Dynamic SQL composition allo
     	// 'list' is the query result
     });
   
-_soar.sqlBuildInfo(tableName)_ takes a table name as its input and returns a **SQL Build Info object** (SBI). With that SBI object, you can add columns, set query conditions and specify addtional options. Most SBI methods would return the SBI object itself, so you can chain funcion calls such that SQL queries can be composed succintly.
+_soar.sqlBuildInfo(tableName)_ takes a table name as its input and returns a **SQL Build Info** (SBI) object. With that SBI object, you can add columns, set query conditions and specify addtional options. Most SBI methods would return the SBI object itself, so you can chain funcion calls such that SQL queries can be composed succintly.
 
 <a name="dynamicAPI"></a>
 #### API
@@ -178,7 +180,7 @@ This function can be used to execute SQL queries (query, insert, update and dele
 
 _cb_ is the callback function which takes an error and a result object.
 
-<a name="soarSBI""></a>
+<a name="soarSBI"></a>
 #####soar.sqlBuildInfo(tableName)
 
 This function returns a SBI (SQL Build Info) object which can be used to build SQL statements. _tableName_ is the name of a table. If you'll access multiple databases in an application, _tableName_ has to be in the form of _dbName.tableName_ so that SOAR knows which database to talk to.
