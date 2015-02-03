@@ -2,8 +2,8 @@
 	"dbConfig": {
 		"host"     : "127.0.0.1",
 		"database" : "soar",
-		"user"     : "root",
-		"password" : "my_passwd",
+		"user"     : "your_acc",
+		"password" : "your_passwd",
 		"supportBigNumbers" : true,
 		"connectionLimit"   : 32
 	}

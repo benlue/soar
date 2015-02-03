@@ -22,7 +22,9 @@ Maybe what developers need is just a light-weight solution to harness SQL. Consi
 So, here comes SOAR.
 
 ## What's New
-Starting from v1.1.0, SOAR provides two programming styles to access database. In addition to the original "data view" style, SOAR now allows developers to dynamically build SQL query templates in applications. The programmatically created SQL query templates are parameterized and can be reused just like the other style can do. With the new programming style, it gives developers more flexbilities and database access has become extremely easy.
+Starting from release 1.1.0, SOAR provides two programming styles to access database. In addition to the original "data view" style, SOAR now allows developers to dynamically build SQL query templates in applications. The programmatically created SQL query templates are parameterized and can be reused just like the other style can do. With the new programming style, it gives developers more flexbilities and database access has become extremely easy.
+
+With release 1.1.1, you can use SOAR to manipulate table schemas. You can check this [section](#schema) for details.
 
 ## Installation
 
@@ -47,6 +49,11 @@ Below are short cuts to major sections of this guide:
     + [sbi.chainFilter()](#sbiChainFilter)
     + [sbi.extra()](#sbiExtra)
     + [sbi.value()](#sbiValue)
++ [Schema management](#schema)
+  + [createTable()](#createTable)
+  + [alterTable()](#alterTable)
+  + [deleteTable()](#deleteTable)
+  + [describeTable()](#describeTable)
 + [Debug messages](#debug)
 
 <a name="dbSetup"></a>
@@ -162,7 +169,7 @@ _soar.sqlBuildInfo(tableName)_ takes a table name as its input and returns a **S
 Belows are APIs related to dynamic SQL composition programming:
 
 <a name="soarExecute"></a>
-#####soar.execute(options, cb)
+##### soar.execute(options, cb)
 
 This function can be used to execute SQL queries (query, insert, update and delete). The _options_ parameter has the following properties:
 
@@ -181,12 +188,12 @@ This function can be used to execute SQL queries (query, insert, update and dele
 _cb_ is the callback function which takes an error and a result object.
 
 <a name="soarSBI"></a>
-#####soar.sqlBuildInfo(tableName)
+##### soar.sqlBuildInfo(tableName)
 
 This function returns a SBI (SQL Build Info) object which can be used to build SQL statements. _tableName_ is the name of a table. If you'll access multiple databases in an application, _tableName_ has to be in the form of _dbName.tableName_ so that SOAR knows which database to talk to.
 
 <a name="sbiJoin"></a>
-#####sbi.join(joinExpr)
+##### sbi.join(joinExpr)
 This SBI function can be used to specify join conditions. Below is a sample code:
 
     var  sbi = soar.sqlBuildInfo('myTable AS myT');
@@ -200,11 +207,11 @@ If you want to make multiple joins, just call _sbi.join()_ as many times as you 
 + onWhat: the join clause. If the _use_ property is specified, this property will be ignored.
 
 <a name="sbiColumn"></a>
-#####sbi.column(column)
+##### sbi.column(column)
 This function can be used to add table columns. If _column_ is a string, the specified column will be added to the existing column collection. You can also add all columns at once by specifying an array of column name strings.
 
 <a name="sbiFilter"></a>
-#####sbi.filter(filter)
+##### sbi.filter(filter)
 This function is used to set query conditions (filter). Note that this function should be called just once or the new setting will replace the old one. The primitive format of a filter is a plain object with the following properties:
 
 + name: name of the filter. It's also used as the key to retrieve filter value from a query object.
@@ -213,7 +220,7 @@ This function is used to set query conditions (filter). Note that this function 
 + noArg: when a query operation does not require argument (e.g. IS NULL), this property should be set to true.
 
 <a name="sbiChainFilter"></a>
-#####sbi.chainFilter(op, filters)
+##### sbi.chainFilter(op, filters)
 If you want to make a compound filter (ANDed or ORed filters), this is the function you need. _op_ should be 'AND' or 'OR', and _filters_ is an array of filters. Below is an example:
 
     var  orFilters = sbi.chainFilter('OR', [
@@ -224,12 +231,36 @@ If you want to make a compound filter (ANDed or ORed filters), this is the funct
 The result filter is a compound filter ORing two filters (region and age).
 
 <a name="sbiExtra"></a>
-#####sbi.extra(extra)
+##### sbi.extra(extra)
 This function can add extra options to a SQL statement. _extra_ is a string with possible values like 'GROUP BY xxx' or 'ORDER BY xxx'.
 
 <a name="sbiValue"></a>
-#####sbi.value()
+##### sbi.value()
 When you're done with the SQL composition, you can call this function to get the build information which can then be fed to the _soar.execute()_ function.
+
+<a name="schema"></a>
+## Schema Management
+Besides accessing data, you can also use SOAR to manage table schema. First of all, you have to get the schema manager from SOAR:
+
+    var  schManager = SOAR.getSchemaManager();
+    
+With the schema manager, you can do:
+
+<a name="createTable"></a>
+### createTable(conn, schema, cb)
+This function will create a database table. _conn_ is a database connection which can be obtained by _soar.getConnection()_. _schema_ is a **schema notation** object which defines a table schema. Please refer to [schema notation]() to know about what it is and how to create a schema notation. _cb_ is a callback function when table creation is successful or erred.
+
+<a name="alterTable"></a>
+### alterTable(conn, schema, cb)
+This function can be used to alter table schema. _conn_ is a database connection which can be obtained by _soar.getConnection()_. _schema_ is a **schema notation** object which defines a table schema. Please refer to [schema notation]() to know about what it is and how to create a schema notation. _cb_ is a callback function when altering table is successfully done or erred.
+
+<a name="deleteTable"></a>
+### deleteTable(conn, tableName, cb)
+This function can be used to delete (drop) a table. _conn_ is a database connection which can be obtained by _soar.getConnection()_. _tableName_ is the name of the table to be dropped. _cb_ is a callback function when deleting table is successfully done or erred.
+
+<a name="describeTable"></a>
+### describeTable(conn, tableName, cb)
+This function can be used to derive schema from an existing table. _tableName_ is the name of the table to be derived. _cb(err, schema)_ is the callback function to return the derived schema. The returned schema object is the same as the **schema notation** as described in [this document]().
 
 <a name="debug"></a>
 ### Debug Messages

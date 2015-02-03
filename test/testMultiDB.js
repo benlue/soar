@@ -1,3 +1,9 @@
+/*!
+* soar
+* authors: Ben Lue
+* license: MIT License
+* Copyright(c) 2015 Gocharm Inc.
+*/
 var  assert = require('assert'),
      path = require('path'),
      soar = require('../lib/soar.js');
@@ -10,7 +16,7 @@ before(function() {
             "dbConfig": {
                 "host"     : "127.0.0.1",
                 "database" : "soar",
-                "user"     : "root",
+                "user"     : "my_acc",
                 "password" : "my_passwd",
                 "supportBigNumbers" : true,
                 "connectionLimit"   : 16
@@ -21,7 +27,7 @@ before(function() {
             "dbConfig": {
                 "host"     : "127.0.0.1",
                 "database" : "soar2",
-                "user"     : "root",
+                "user"     : "my_acc",
                 "password" : "my_passwd",
                 "supportBigNumbers" : true,
                 "connectionLimit"   : 16

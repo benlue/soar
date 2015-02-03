@@ -1,4 +1,6 @@
-#Using Data View To Access Database
+Using Data View To Access Database
+==================================
+
 A data view is a XML file used to formulate a SQL query. SOAR uses data views to compose SQL statements. SOAR can also smartly generate the proper query conditions based on the given query values.
 
 ## Contents
