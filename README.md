@@ -39,7 +39,7 @@ Below are short cuts to major sections of this guide:
   + [Multiple database configuration](#multidb)
 + [Access database](#accessDB)
   + [Access via data view](#dataView)
-  + [Dynamic SQL composition](#dynamicSQL)
+  + [SQL template](#dynamicSQL)
   + [API](#dynamicAPI)
     + [soar.execute()](#soarExecute)
     + [soar.sqlBuildInfo()](#soarSBI)
@@ -142,8 +142,8 @@ SOAR offers two types of programming styles to access databases. One is via "Dat
 Data view is a XML file used to formulate SQL queries. By parameterizing and formulating SQL queries in XML format, SQL queries can be easily reused and managed. For details about how to use "data view" to access databases, please refer to this [article](https://github.com/benlue/soar/blob/master/doc/AccessWithDataView.md).
 
 <a name="dynamicSQL"></a>
-### Dynamic SQL Composition
-This is the other programming style SOAR supported. Dynamic SQL composition allows you to compose and reuse SQL queries in a clean and managable way. Let's start with an example:
+### SQL Template
+This is the other programming style SOAR supported. SQL templates allow you to compose and reuse SQL queries in a clean and managable way. Let's start with an example:
 
     var  soar = require('soarjs');
     
@@ -166,7 +166,7 @@ _soar.sqlBuildInfo(tableName)_ takes a table name as its input and returns a **S
 
 <a name="dynamicAPI"></a>
 #### API
-Belows are APIs related to dynamic SQL composition programming:
+Belows are APIs related to programming with SQL templates:
 
 <a name="soarExecute"></a>
 ##### soar.execute(options, cb)
@@ -248,11 +248,11 @@ With the schema manager, you can do:
 
 <a name="createTable"></a>
 ### createTable(conn, schema, cb)
-This function will create a database table. _conn_ is a database connection which can be obtained by _soar.getConnection()_. _schema_ is a **schema notation** object which defines a table schema. Please refer to [schema notation]() to know about what it is and how to create a schema notation. _cb_ is a callback function when table creation is successful or erred.
+This function will create a database table. _conn_ is a database connection which can be obtained by _soar.getConnection()_. _schema_ is a **schema notation** object which defines a table schema. Please refer to [schema notation](https://github.com/benlue/soar/blob/master/doc/SchemaNotation.md) to know about what it is and how to create a schema notation. _cb_ is a callback function when table creation is successful or erred.
 
 <a name="alterTable"></a>
 ### alterTable(conn, schema, cb)
-This function can be used to alter table schema. _conn_ is a database connection which can be obtained by _soar.getConnection()_. _schema_ is a **schema notation** object which defines a table schema. Please refer to [schema notation]() to know about what it is and how to create a schema notation. _cb_ is a callback function when altering table is successfully done or erred.
+This function can be used to alter table schema. _conn_ is a database connection which can be obtained by _soar.getConnection()_. _schema_ is a **schema notation** object which defines a table schema. Please refer to [schema notation](https://github.com/benlue/soar/blob/master/doc/SchemaNotation.md) to know about what it is and how to create a schema notation. _cb_ is a callback function when altering table is successfully done or erred.
 
 <a name="deleteTable"></a>
 ### deleteTable(conn, tableName, cb)
@@ -260,7 +260,7 @@ This function can be used to delete (drop) a table. _conn_ is a database connect
 
 <a name="describeTable"></a>
 ### describeTable(conn, tableName, cb)
-This function can be used to derive schema from an existing table. _tableName_ is the name of the table to be derived. _cb(err, schema)_ is the callback function to return the derived schema. The returned schema object is the same as the **schema notation** as described in [this document]().
+This function can be used to derive schema from an existing table. _tableName_ is the name of the table to be derived. _cb(err, schema)_ is the callback function to return the derived schema. The returned schema object is the same as the **schema notation** as described in [this document](https://github.com/benlue/soar/blob/master/doc/SchemaNotation.md).
 
 <a name="debug"></a>
 ### Debug Messages
