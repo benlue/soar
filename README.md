@@ -53,12 +53,13 @@ Below are short cuts to major sections of this guide:
     + [insert](#dynamicInsert)
     + [update](#dynamicUpdate)
     + [delete](#dynamicDelete)
+    + [How to do transactions](#transaction)
 + [Schema management](#schema)
   + [createTable()](#createTable)
   + [alterTable()](#alterTable)
   + [deleteTable()](#deleteTable)
   + [describeTable()](#describeTable)
-+ [Debug messages](#debug)
++ [Debugging messages](#debug)
 
 <a name="dbSetup"></a>
 ## DB Settings
@@ -147,7 +148,7 @@ Data view is a XML file used to formulate SQL queries. By parameterizing and for
 
 <a name="dynamicSQL"></a>
 ### SQL Template
-This is the other (and newer) programming style SOAR supported. SQL templates allow you to compose and reuse SQL queries in a clean and managable way. Let's start with an example:
+SQL template the other (and newer) programming style SOAR supported. SQL templates allow you to compose and reuse SQL queries in a clean and managable way. Let's start with an example:
 
     var  soar = require('soarjs');
     
@@ -166,7 +167,7 @@ This is the other (and newer) programming style SOAR supported. SQL templates al
     	// 'list' is the query result
     });
   
-_soar.sqlTempalte(tableName)_ takes a table name as its input and returns a **SQL Template** object. With a SQL template, you can add columns, set query conditions and specify addtional options. Most SQL template methods would return the template object itself, so you can chain funcion calls such that SQL queries can be composed succintly.
+_soar.sqlTempalte(tableName)_ takes a table name as its input and returns a **SQL Template** object. With SQL templates, you can add columns, set query conditions and specify addtional options. Most SQL template functions will return the template object itself, so you can chain funcion calls such that SQL queries can be composed succintly.
 
 <a name="dynamicAPI"></a>
 #### API
@@ -175,11 +176,11 @@ Belows are APIs related to programming with SQL templates:
 <a name="soarExecute"></a>
 ##### soar.execute(options, cb)
 
-This function can be used to execute SQL queries (query, insert, update and delete). The _options_ parameter has the following properties:
+This function can be used to execute SQL queries (query, list, insert, update and delete). The _options_ parameter has the following properties:
 
 + op: should be one of the following: 'query', 'list', 'insert', 'update' and 'delete'.
 
-+ sqlExpr: a SQL specification which can be built using SQL Build Info as shown in the above example.
++ sqlExpr: a SQL expression which can be built using SQL templates as shown in the above sample code.
 
 + data: a plain Javascript object which contains data to be inserted or updated to a table. This is required for **insert** or **update**.
 
@@ -187,9 +188,7 @@ This function can be used to execute SQL queries (query, insert, update and dele
 
 + range: specifies the window of a result set. The _range_ object can be created using the _soar.range()_ function.
 
-+ fields: an array of strings. If you do not need all the table columns specified in the _sqlExpr_ to be returned, you can use this property to specify what columns you would like to receive.
-
-_cb_ is the callback function which takes an error and a result object.
+_cb_ is the callback function which takes an error and a result object (for query, list and insert operations).
 
 <a name="soarSBI"></a>
 ##### soar.sqlTemplate(tableName)
@@ -202,12 +201,12 @@ This function has been deprecated in favor of the _soar.sqlTemplate()_ function.
 
 <a name="sbiJoin"></a>
 ##### sqlTemplate.join(joinExpr)
-This SBI function can be used to specify join conditions. Below is a sample code:
+This template function can be used to specify join conditions. Below is a sample code:
 
-    var  sbi = soar.sqlBuildInfo('myTable AS myT');
-    sbi.join( {table: 'Location AS loc', onWhat: 'myT.locID=loc.locID'} );
+    var  stemp = soar.sqlTemplate('myTable AS myT');
+    stemp.join( {table: 'Location AS loc', onWhat: 'myT.locID=loc.locID'} );
     
-If you want to make multiple joins, just call _sbi.join()_ as many times as you need. The join information is also a plain object with the following properties:
+If you want to make multiple joins, just call _join()_ as many times as you need. The join information is also a plain object with the following properties:
 
 + table: name of the joined table.
 + type: if you want to make a left join, you can set this property to 'LEFT'.
@@ -250,7 +249,7 @@ When you've done with the SQL composition, you can call this function to get the
 
 <a name="dynamicCase"></a>
 #### Use Cases
-Below we'll show how to use _soar.execute()_ to do query, list, insert, update and delete. We'll assume a 'Person' table and use it in the following examples.
+Below we'll show how to use _soar.execute()_ to do query, list, insert, update and delete. We'll assume a 'Person' table and use it in the following sample codes.
 
 <a name="dynamicQuery"></a>
 ##### Query
@@ -369,6 +368,31 @@ Below is a sample code to do delete from a (Person) table:
     soar.execute(option, function(err) {
         // you should check 'err' to see if anything goes wrong.
     });
+    
+<a name="transaction"></a>    
+##### Transaction
+Doing transaction is faily simple. All you need to do is to obtain a database connection and pass it to _soar.execute()_. Below is the sample code:
+
+    var  expr = soar.sqlTemplate('Perons').value();
+    
+    soar.getConnection( function(err, conn) {
+        // remember to specify database connection in 'option'
+        var  option = {
+            op: 'insert',
+            expr: expr,
+            data: {name: 'Scott Cooper'},
+            conn: conn
+        };
+            
+        conn.beginTransaction(function(err) {
+            soar.execute(option, function(err, data) {
+                if (err)
+                    conn.rollback();
+                else
+                    conn.commit();
+            });
+        };
+    });
 
 <a name="schema"></a>
 ## Schema Management
@@ -395,7 +419,7 @@ This function can be used to delete (drop) a table. _conn_ is a database connect
 This function can be used to derive schema from an existing table. _tableName_ is the name of the table to be derived. _cb(err, schema)_ is the callback function to return the derived schema. The returned schema object is the same as the **schema notation** as described in [this document](https://github.com/benlue/soar/blob/master/doc/SchemaNotation.md).
 
 <a name="debug"></a>
-### Debug Messages
+## Debug Messages
 If you want to know what SQLs are actually generated by SOAR, you can turn on debug messages as shown below:
 
     soar.setDebug( true );
@@ -403,7 +427,7 @@ If you want to know what SQLs are actually generated by SOAR, you can turn on de
 That will display generated SQL along with other debug information in console.
 
 ## Regarding Tests
-The SOAR package comes with some test files. To run those tests, sample data have to be built first. Inside the SOAR istallation, there is a "def" directory which includes schema.sql and sampleData.sql. Those two files can be used to build the sample data. In addition, you have to modify your config.json file and the related database settings in the test prorams.
+The SOAR package comes with some test files. To run those tests, sample data have to be built first. Inside the SOAR istallation, there is a "def" directory which includes schema.sql and sampleData.sql. Those two files can be used to build the sample data. In addition, remember to change the user name and password in your config.json file and the related database settings in the test programs.
 
 ## Database Supported
-In the current release, SOAR only supports mySQL. If you want to use SOAR for other databases such as Postgre, MS SQL server or Oracle DB, etc, you'll have to write your own SQL generator. Right now SQL generation is implemented by ./lib/sqlGenMySql.js. If anyone is interested in contributing SQL generators of other DBs, it's certainly welcome.
+In the current release, SOAR only supports mySQL. If you want to use SOAR for other databases such as Postgre, MS SQL server or Oracle DB, etc, you'll have to write your own SQL generator. Right now SQL generation is implemented by ./lib/sqlGenMySql.js. 
