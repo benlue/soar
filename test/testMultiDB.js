@@ -16,8 +16,8 @@ before(function() {
             "dbConfig": {
                 "host"     : "127.0.0.1",
                 "database" : "soar",
-                "user"     : "my_acc",
-                "password" : "my_passwd",
+                "user"     : "root",
+                "password" : "your_passwd",
                 "supportBigNumbers" : true,
                 "connectionLimit"   : 16
             },
@@ -27,8 +27,8 @@ before(function() {
             "dbConfig": {
                 "host"     : "127.0.0.1",
                 "database" : "soar2",
-                "user"     : "my_acc",
-                "password" : "my_passwd",
+                "user"     : "root",
+                "password" : "your_passwd",
                 "supportBigNumbers" : true,
                 "connectionLimit"   : 16
             },

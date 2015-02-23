@@ -22,9 +22,7 @@ Maybe what developers need is just a light-weight solution to harness SQL. Consi
 So, here comes SOAR.
 
 ## What's New
-Starting from release 1.1.0, SOAR provides two programming styles to access database. In addition to the original "data view" style, SOAR now allows developers to dynamically build SQL query templates in applications. The programmatically created SQL query templates are parameterized and can be reused just like the other style can do. With the new programming style, it gives developers more flexbilities and database access has become extremely easy.
-
-With release 1.1.1, you can use SOAR to manipulate table schemas. You can check this [section](#schema) for details.
+Please refer to the [release notes](https://github.com/benlue/soar/blob/master/releaseNote.md) for details.
 
 ## Installation
 
@@ -42,13 +40,19 @@ Below are short cuts to major sections of this guide:
   + [SQL template](#dynamicSQL)
   + [API](#dynamicAPI)
     + [soar.execute()](#soarExecute)
-    + [soar.sqlBuildInfo()](#soarSBI)
-    + [sbi.join()](#sbiJoin)
-    + [sbi.column()](#sbiColumn)
-    + [sbi.filter()](#sbiFilter)
-    + [sbi.chainFilter()](#sbiChainFilter)
-    + [sbi.extra()](#sbiExtra)
-    + [sbi.value()](#sbiValue)
+    + [soar.sqlTemplate()](#soarSBI)
+    + [sqlTemplate.join()](#sbiJoin)
+    + [sqlTemplate.column()](#sbiColumn)
+    + [sqlTemplate.filter()](#sbiFilter)
+    + [sqlTemplate.chainFilter()](#sbiChainFilter)
+    + [sqlTemplate.extra()](#sbiExtra)
+    + [sqlTemplate.value()](#sbiValue)
+  + [Use cases](#dynamicCase)
+    + [query](#dynamicQuery)
+    + [list](#dynamicList)
+    + [insert](#dynamicInsert)
+    + [update](#dynamicUpdate)
+    + [delete](#dynamicDelete)
 + [Schema management](#schema)
   + [createTable()](#createTable)
   + [alterTable()](#alterTable)
@@ -139,22 +143,22 @@ SOAR offers two types of programming styles to access databases. One is via "Dat
 
 <a name="dataView"></a>
 ### Access Via Data View
-Data view is a XML file used to formulate SQL queries. By parameterizing and formulating SQL queries in XML format, SQL queries can be easily reused and managed. For details about how to use "data view" to access databases, please refer to this [article](https://github.com/benlue/soar/blob/master/doc/AccessWithDataView.md).
+Data view is a XML file used to formulate SQL queries. By parameterizing and formulating SQL queries in XML format, SQL queries can be easily reused and managed. For details about how to use "data view" to access databases, please refer to [Using Data View To Access Database](https://github.com/benlue/soar/blob/master/doc/AccessWithDataView.md).
 
 <a name="dynamicSQL"></a>
 ### SQL Template
-This is the other programming style SOAR supported. SQL templates allow you to compose and reuse SQL queries in a clean and managable way. Let's start with an example:
+This is the other (and newer) programming style SOAR supported. SQL templates allow you to compose and reuse SQL queries in a clean and managable way. Let's start with an example:
 
     var  soar = require('soarjs');
     
-    var  sbi = soar.sqlBuildInfo('Person');
-    sbi.column(['id', 'addr AS address', 'age']).
+    var  stmp = soar.sqlTemplate('Person');
+    stmp.column(['id', 'addr AS address', 'age']).
     filter( {name: 'age', op: '>='} ).
     extra( 'ORDER BY id' );
     
     var  option = {
     	op: list,
-    	expr: sbi.value(),
+    	expr: stmp.value(),
     	query: {age: 18}
     }
     
@@ -162,7 +166,7 @@ This is the other programming style SOAR supported. SQL templates allow you to c
     	// 'list' is the query result
     });
   
-_soar.sqlBuildInfo(tableName)_ takes a table name as its input and returns a **SQL Build Info** (SBI) object. With that SBI object, you can add columns, set query conditions and specify addtional options. Most SBI methods would return the SBI object itself, so you can chain funcion calls such that SQL queries can be composed succintly.
+_soar.sqlTempalte(tableName)_ takes a table name as its input and returns a **SQL Template** object. With a SQL template, you can add columns, set query conditions and specify addtional options. Most SQL template methods would return the template object itself, so you can chain funcion calls such that SQL queries can be composed succintly.
 
 <a name="dynamicAPI"></a>
 #### API
@@ -188,12 +192,16 @@ This function can be used to execute SQL queries (query, insert, update and dele
 _cb_ is the callback function which takes an error and a result object.
 
 <a name="soarSBI"></a>
+##### soar.sqlTemplate(tableName)
+
+This function returns a SQL template object which can be used to build parameterized SQL statements. _tableName_ is the name of a table. If you'll access multiple databases in an application, _tableName_ has to be in the form of _dbName.tableName_ so that SOAR knows which database to talk to.
+
 ##### soar.sqlBuildInfo(tableName)
 
-This function returns a SBI (SQL Build Info) object which can be used to build SQL statements. _tableName_ is the name of a table. If you'll access multiple databases in an application, _tableName_ has to be in the form of _dbName.tableName_ so that SOAR knows which database to talk to.
+This function has been deprecated in favor of the _soar.sqlTemplate()_ function.
 
 <a name="sbiJoin"></a>
-##### sbi.join(joinExpr)
+##### sqlTemplate.join(joinExpr)
 This SBI function can be used to specify join conditions. Below is a sample code:
 
     var  sbi = soar.sqlBuildInfo('myTable AS myT');
@@ -207,20 +215,22 @@ If you want to make multiple joins, just call _sbi.join()_ as many times as you 
 + onWhat: the join clause. If the _use_ property is specified, this property will be ignored.
 
 <a name="sbiColumn"></a>
-##### sbi.column(column)
+##### sqlTemplate.column(column)
 This function can be used to add table columns. If _column_ is a string, the specified column will be added to the existing column collection. You can also add all columns at once by specifying an array of column name strings.
 
 <a name="sbiFilter"></a>
-##### sbi.filter(filter)
-This function is used to set query conditions (filter). Note that this function should be called just once or the new setting will replace the old one. The primitive format of a filter is a plain object with the following properties:
+##### sqlTemplate.filter(filter)
+This function is used to set query conditions (filter). The primitive format of a filter is a plain object with the following properties:
 
 + name: name of the filter. It's also used as the key to retrieve filter value from a query object.
 + field: the real column name in a table. If this property is missing, the _name_ property will be used instead.
 + op: what comparator to be used. It can be '>', '=' or 'IS NULL', etc.
 + noArg: when a query operation does not require argument (e.g. IS NULL), this property should be set to true.
 
+Note that this function should be called just once for each SQL templat. Otherwise the new setting will replace the old one. 
+
 <a name="sbiChainFilter"></a>
-##### sbi.chainFilter(op, filters)
+##### sqlTemplate.chainFilter(op, filters)
 If you want to make a compound filter (ANDed or ORed filters), this is the function you need. _op_ should be 'AND' or 'OR', and _filters_ is an array of filters. Below is an example:
 
     var  orFilters = sbi.chainFilter('OR', [
@@ -231,12 +241,134 @@ If you want to make a compound filter (ANDed or ORed filters), this is the funct
 The result filter is a compound filter ORing two filters (region and age).
 
 <a name="sbiExtra"></a>
-##### sbi.extra(extra)
-This function can add extra options to a SQL statement. _extra_ is a string with possible values like 'GROUP BY xxx' or 'ORDER BY xxx'.
+##### sqlTemplate.extra(extra)
+This function can add extra options to a SQL statement. _extra_ is a string with possible values like 'GROUP BY col_name' or 'ORDER BY col_name'.
 
 <a name="sbiValue"></a>
-##### sbi.value()
-When you're done with the SQL composition, you can call this function to get the build information which can then be fed to the _soar.execute()_ function.
+##### sqlTemplate.value()
+When you've done with the SQL composition, you can call this function to get the SQL template which can be fed to the _soar.execute()_ function to access databases as you wish.
+
+<a name="dynamicCase"></a>
+#### Use Cases
+Below we'll show how to use _soar.execute()_ to do query, list, insert, update and delete. We'll assume a 'Person' table and use it in the following examples.
+
+<a name="dynamicQuery"></a>
+##### Query
+If you expect a table query should return only one entity (even though there maybe multiple matches to your query), you can ask SOAR to do **query**. Below is a sample code to query a person from the Person table:
+
+    var  stemp = soar.sqlTemplate('Person');
+    
+    // 'expr' is a SQL expression equivalent to 
+    // SELECT * FROM Person WHERE psnID=?
+    var  expr = stemp.filter( {name: 'psnID'} ).value();
+        
+    // The 'option' specified below is like a command to SOAR
+    // It will query the person whose psnID is 1
+    var  option = {
+            op: 'query',
+            expr: expr,
+            query: {psnID: 1}
+        };
+        
+    // Invoke soar.execute() to get the result
+    soar.execute(option, function(err, data) {
+        // 'data' is the query result
+    });
+    
+<a name="dynamicList"></a>    
+##### List
+If your query will return multiple entities, you should do a **list**. Below is a sample code to list persons whose age are over 25 from the Person table:
+
+    var  stemp = soar.sqlTemplate('Person');
+    
+    // 'expr' is a SQL expression equivalent to 
+    // SELECT * FROM Person WHERE age > ?
+    var  expr = stemp.filter( {name: 'age', op: '>'} ).value();
+        
+    // The 'option' specified below is like a command to SOAR
+    // It will list all persons whose age is greater than 25
+    var  option = {
+            op: 'list',
+            expr: expr,
+            query: {age: 25}
+        };
+        
+    // Invoke soar.execute() to get the result
+    soar.execute(option, function(err, list) {
+        // 'list' is the query result
+    });
+
+<a name="dynamicInsert"></a>    
+##### Insert
+Below is a sample code to insert to a (Person) table:
+
+    // 'expr' is a SQL expression equivalent to 
+    // INSERT INTO Person VALUES (...)
+    var  expr = soar.sqlTemplate('Person').value();
+        
+    // The 'option' specified below is like a command to SOAR
+    // It will isnert a person whose name is 'Scott Copper'
+    var  option = {
+            op: 'insert',
+            expr: expr,
+            data: {name: 'Scott Cooper'}
+        };
+        
+    // Invoke soar.execute() to do the insert
+    soar.execute(option, function(err, value) {
+        // 'value' contains the primary key value of the inserted
+        // in this case, it will be something like:
+        // {psnID: _the_psnID_of_the_newly_inserted_entity}
+        // where 'psnID' is the primary key of the Person table
+    });
+
+<a name="dynamicUpdate"></a>    
+##### Update
+Below is a sample code to update a (Person) table:
+
+    var  stemp = soar.sqlTemplate('Person');
+    
+    // 'expr' is a SQL expression equivalent to 
+    // Update Person set ... WHERE psnID=?
+    var  expr = stemp.filter( {name: 'psnID'} ).value();
+        
+    // The 'option' specified below is like a command to SOAR
+    // It will update the person whose psnID is 1
+    // The 'data' property specify the new value of the column 'name'
+    var  option = {
+            op: 'update',
+            expr: expr,
+            data: {name: 'John Mayer'}
+            query: {psnID: 1}
+        };
+        
+    // Invoke soar.execute() to do the update
+    soar.execute(option, function(err) {
+        // you should check 'err' to see if anything goes wrong.
+    });
+
+<a name="dynamicDelete"></a>    
+##### Delete
+Below is a sample code to do delete from a (Person) table:
+
+    var  stemp = soar.sqlTemplate('Person');
+    
+    // 'expr' is a SQL expression equivalent to 
+    // DELETE FROM Person WHERE psnID=?
+    var  expr = stemp.filter( {name: 'psnID'} ).value();
+        
+    // The 'option' specified below is like a command to SOAR
+    // It will delete the person whose psnID is 1
+    var  option = {
+            op: 'delete',
+            expr: expr,
+            query: {psnID: 1}
+        };
+        
+    // Invoke soar.execute() to do the delete
+    soar.execute(option, function(err) {
+        // you should check 'err' to see if anything goes wrong.
+    });
 
 <a name="schema"></a>
 ## Schema Management
