@@ -1,9 +1,9 @@
 The Schema Notation
 ===================
 
-A SQL DDL (Data Definition Language) statement itself is not suitable for analyzing or manipulation. If you want to manage table schemas, you'll need a better tool than DDL to do that.
+A SQL DDL (Data Definition Language) statement is not quite suitable for analyzing or manipulation. If you have to manage table schemas, you'll need a better tool than DDL.
 
-To solve the problem, SOAR uses a schema notion which is a JSON object to describe a table schema. A schema notation object has the following format:
+To solve the problem, SOAR proposes a schema notion which uses a JSON object to describe a table schema. A schema notation object has the following format:
 
     {
         title: 'name_of_the_table',
