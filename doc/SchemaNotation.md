@@ -37,7 +37,7 @@ If you want to alter a table schema using the schema manager's alterTable() func
 
     {
         title: 'name_of_the_table',
-        add {
+        add: {
         	column: {
         	    colName1: {type: 'data_type', format: 'data_format'},
                 colName2: {type: 'data_type', format: 'data_format'},
