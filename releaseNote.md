@@ -1,3 +1,8 @@
+1.1.3
+=====
+
++ Fixed a bug in altering table.
+
 1.1.2
 =====
 

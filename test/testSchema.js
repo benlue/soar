@@ -45,7 +45,7 @@ describe('Schema manipulation', function()  {
     	});
     });
 
-    it('Alter table', function(done) {
+    it('Alter table -- add', function(done) {
     	var  schema = {
     		title: 'TestPage',
     		add: {
@@ -86,6 +86,33 @@ describe('Schema manipulation', function()  {
     			})
     		});
     	});
+    });
+
+    it('Alter table -- drop', function(done) {
+        var  schema = {
+            title: 'TestPage',
+            drop: {
+                column: ['year'],
+                index: ['IDX_PAGE_YEAR'],
+                foreignKey: ['FK_pageRpsn']
+            }
+        };
+
+        var  schMgr = soar.getSchemaManager();
+        soar.getConnection(function(err, conn)  {
+            schMgr.alterTable( conn, schema, function(err)  {
+                if (err)
+                    console.log( err.stack );
+                assert(!err, 'Altering table failed');
+
+                schMgr.describeTable(conn, 'TestPage', function(err, schema) {
+                    //console.log( JSON.stringify(schema.columns, null, 2) );
+                    assert.equal(schema.title, 'TestPage', 'table name is wrong');
+                    assert.equal(Object.keys(schema.columns).length, 3, 'table has 3 columns');
+                    done();
+                })
+            });
+        });
     });
 
     it('Delete table', function(done) {
