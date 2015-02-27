@@ -148,7 +148,7 @@ Data view is a XML file used to formulate SQL queries. By parameterizing and for
 
 <a name="dynamicSQL"></a>
 ### SQL Template
-SQL template the other (and newer) programming style SOAR supported. SQL templates allow you to compose and reuse SQL queries in a clean and managable way. Let's start with an example:
+SQL template is the other (and newer) programming style SOAR supported. SQL templates allow you to compose and reuse SQL queries in a clean and managable way. Let's start with an example:
 
     var  soar = require('soarjs');
     
