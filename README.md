@@ -57,7 +57,7 @@ Below are short cuts to major sections of this guide:
   + [Multiple database configuration](#multidb)
 + [Access database](#accessDB)
   + [Access via data view](#dataView)
-  + [SQL template](#dynamicSQL)
+  + [Access with SQL templates](#dynamicSQL)
   + [API](#dynamicAPI)
     + [soar.execute()](#soarExecute)
     + [soar.sqlTemplate()](#soarSBI)
@@ -103,7 +103,7 @@ Right beneath the SOAR installation directory, there is a **config.json** file w
 
 where **host** is the database host and **database** is the database name. **user** and **password** are the database user name and password respectively. SOAR ueses the _mysql_ node module as its mySQL driver and the connection pool feature is turned on by default.
 
-**defPath** is the file directory where data view files of a database are saved. For details about what data view files are, please refer to [this article](https://github.com/benlue/soar/blob/master/doc/AccessWithDataView.md).
+**defPath** is the file directory where data view files of a database are saved. For details about what data view files are, please refer to [this article](https://github.com/benlue/soar/blob/master/doc/AccessWithDataView.md). If you'll use SQL templates instead of data views to access databases, you can omit this property.
 
 <a name="configProg"></a>
 ### Configure Programmatically
@@ -158,16 +158,18 @@ If you need to connect to 10 databases in your application, then the configurati
 
 How to access each database in a multi-databases scenario will be explained in each database access method (query, list, create, update and delete) below.
 
+If you'll use SQL templates instead of data views to access databases, you can omit the **defPath** property.
+
 <a name="accessDB"></a>
 ## Access Database
-SOAR offers two types of programming styles to access databases. One is via "Data View" definitions, and the other is the newly introduced (since v1.1.0) "dynamic SQL composition" style. 
+SOAR offers two types of programming styles to access databases. One is via "Data View" definitions, and the other is the SQL templates style. 
 
 <a name="dataView"></a>
-### Access Via Data View
+### Access via Data View
 Data view is a XML file used to formulate SQL queries. By parameterizing and formulating SQL queries in XML format, SQL queries can be easily reused and managed. For details about how to use "data view" to access databases, please refer to [Using Data View To Access Database](https://github.com/benlue/soar/blob/master/doc/AccessWithDataView.md).
 
 <a name="dynamicSQL"></a>
-### SQL Template
+### Access with SQL Templates
 SQL template is the other (and newer) programming style SOAR supported. SQL templates allow you to compose and reuse SQL queries in a clean and managable way. Let's start with an example:
 
     var  soar = require('soarjs');
