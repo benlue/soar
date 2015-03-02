@@ -14,7 +14,7 @@ before(function() {
     soar.config();
 });
 
-describe('Test various SQL commands', function()  {
+describe('Test CRUD using data views', function()  {
     it('Simple query', function(done) {
         soar.query('Person/general.dvml', {psnID: 1}, function(err, data) {
             assert( data, 'Missing psnID=1 data');
@@ -189,6 +189,22 @@ describe('Test dynamic query', function()  {
         });
     });
 
+    it('Query without specifying table columns and query conditions', function(done) {
+        var  stemp = soar.sqlTemplate('Person'),
+             option = {
+                op: 'query',
+                expr: stemp.value()
+             },
+             query = {psnID: 1};
+
+        soar.execute(option, query, function(err, data) {
+            //console.log( JSON.stringify(data, null, 4) );
+            assert( data, 'Missing psnID=1 data');
+            assert.equal( data.name, 'John', 'Person name not matched.');
+            done();
+        });
+    });
+
     it('List all persons', function(done) {
         var  expr = soar.sqlTemplate('Person').value();
 
@@ -241,6 +257,32 @@ describe('Test dynamic query', function()  {
         var  option = {
                 op: 'update',
                 expr: expr
+             },
+             data = {name: 'John Mayer'},
+             query = {psnID: 1};
+
+        soar.execute(option, data, query, function(err) {
+            assert(!err, 'Failed to do update.');
+
+            option.op = 'query';
+            soar.execute(option, query, function(err, data) {
+                assert.equal( data.name, 'John Mayer', 'Person name not matched.');
+
+                // restore data
+                option.op = 'update';
+                soar.execute(option, {name: 'John'}, query, function(err) {
+                    assert(!err, 'Failed to do update.');
+                    done();
+                });
+            });
+        })
+    });
+
+    it('Update without specifying table columns and query conditions', function(done) {
+        var  stemp = soar.sqlTemplate('Person'),
+             option = {
+                op: 'update',
+                expr: stemp.value()
              },
              data = {name: 'John Mayer'},
              query = {psnID: 1};

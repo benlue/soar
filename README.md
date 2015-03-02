@@ -21,6 +21,26 @@ Maybe what developers need is just a light-weight solution to harness SQL. Consi
 
 So, here comes SOAR.
 
+## A simple example
+The following example should get you interested in SOAR. Assuming you have a table called 'Person', consider the sample code below:
+
+    var  soar = requrie('soarjs');
+    
+    var  cmd = {
+                op: 'list',
+                expr: soar.sqlTemplate('Person').value()
+               };
+               
+    soar.execute(cmd, {age: 25}, function(err, list) {
+        // list will include any person whose age is 25.
+    });
+
+That's similar to issuing a SQL statement like:
+
+    SELECT * FROM Person WHERE age = 25;
+    
+Better yet, every matched data entry will be wrapped up as a JSON object and packed into an array for you.
+
 ## What's New
 Please refer to the [release notes](https://github.com/benlue/soar/blob/master/releaseNote.md) for details.
 
@@ -184,6 +204,8 @@ This function can be used to execute SQL queries (query, list, insert, update an
 
 + range: specifies the window of a result set. The _range_ object can be created using the _soar.range()_ function.
 
++ conn: a database connection object. You usually don't have to specify this property unless you want to do transactions.
+
 Note that the **_data_** and **_query_** parameters were used to be included as the properties of the **_cmd_** parameter. However, including data and query in the **_cmd_** paramater would reduce the possibilities of reusing the **_cmd_** parameter which actually defines how to access DBMS. As a result, data and query are extracted from the **_cmd_** parameter sinece v1.1.4. The old signature still works, but it's deprecated.
 
 If the **_data_** parameter is not needed, the function can be simplified to _execute(cmd, query, cb)_.
@@ -194,10 +216,6 @@ _cb_ is the callback function which receives an error and sometimes a result obj
 ##### soar.sqlTemplate(tableName)
 
 This function returns a SQL template object which can be used to build parameterized SQL statements. _tableName_ is the name of a table. If you'll access multiple databases in an application, _tableName_ has to be in the form of _dbName.tableName_ so that SOAR knows which database to talk to.
-
-##### soar.sqlBuildInfo(tableName)
-
-This function has been deprecated in favor of the _soar.sqlTemplate()_ function.
 
 <a name="sbiJoin"></a>
 ##### sqlTemplate.join(joinExpr)
@@ -232,12 +250,13 @@ Note that this function should be called just once for each SQL templat. Otherwi
 ##### sqlTemplate.chainFilters(op, filters)
 If you want to make a compound filter (ANDed or ORed filters), this is the function you need. _op_ should be 'AND' or 'OR', and _filters_ is an array of filters. Below is an example:
 
-    var  orFilters = sbi.chainFilters('OR', [
-        {name: 'region', op: '='},
-        {name: 'age', op: '>'}
-    ]);
+    var  stemp = soar.sqlTemplate('myTable'),
+    	 orFilters = stemp.chainFilters('OR', [
+            {name: 'region', op: '='},
+            {name: 'age', op: '>'}
+         ]);
 
-The result filter is a compound filter ORing two filters (region and age).
+The resulting filter (orFilters) is a compound filter ORing two filters (region and age).
 
 <a name="sbiExtra"></a>
 ##### sqlTemplate.extra(extra)

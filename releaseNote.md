@@ -1,3 +1,8 @@
+1.1.5
+=====
+
++ When invoking _execute()_ without specifying the query conditions, SOAR will automatically generate the corresponding query conditions based on the given query value.
+
 1.1.4
 =====
 
