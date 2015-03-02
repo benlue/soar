@@ -184,7 +184,9 @@ This function can be used to execute SQL queries (query, list, insert, update an
 
 + range: specifies the window of a result set. The _range_ object can be created using the _soar.range()_ function.
 
-Note that the **_data_** and **_query_** parameters were used to be included as the properties of the **_cmd_** parameter. However, including data and query in the **_cmd_** paramater would reduce the possibilities of reusing the **_cmd_** parameter which actually defines how to access DBMS. As a result, data and query are extracted fromm the **_cmd_** parameter sinece v1.1.4. The old signature still works, but it's deprecated.
+Note that the **_data_** and **_query_** parameters were used to be included as the properties of the **_cmd_** parameter. However, including data and query in the **_cmd_** paramater would reduce the possibilities of reusing the **_cmd_** parameter which actually defines how to access DBMS. As a result, data and query are extracted from the **_cmd_** parameter sinece v1.1.4. The old signature still works, but it's deprecated.
+
+If the **_data_** parameter is not needed, the function can be simplified to _execute(cmd, query, cb)_.
 
 _cb_ is the callback function which receives an error and sometimes a result object (when it's a query, list or insert operation).
 
@@ -259,16 +261,16 @@ If you expect a table query should return only one entity (even though there may
     // SELECT * FROM Person WHERE psnID=?
     var  expr = stemp.filter( {name: 'psnID'} ).value();
         
-    // The 'option' specified below is like a command to SOAR
+    // 'cmd' below is like a command to SOAR
     // It will query the person whose psnID is 1
-    var  option = {
+    var  cmd = {
             op: 'query',
-            expr: expr,
-            query: {psnID: 1}
-        };
+            expr: expr
+         },
+         query = {psnID: 1};
         
     // Invoke soar.execute() to get the result
-    soar.execute(option, function(err, data) {
+    soar.execute(cmd, query, function(err, data) {
         // 'data' is the query result
     });
     
@@ -282,16 +284,16 @@ If your query will return multiple entities, you should do a **list**. Below is 
     // SELECT * FROM Person WHERE age > ?
     var  expr = stemp.filter( {name: 'age', op: '>'} ).value();
         
-    // The 'option' specified below is like a command to SOAR
+    // 'cmd' below is like a command to SOAR
     // It will list all persons whose age is greater than 25
-    var  option = {
+    var  cmd = {
             op: 'list',
-            expr: expr,
-            query: {age: 25}
-        };
+            expr: expr
+         },
+         query = {age: 25};
         
     // Invoke soar.execute() to get the result
-    soar.execute(option, function(err, list) {
+    soar.execute(cmd, query, function(err, list) {
         // 'list' is the query result
     });
 
@@ -303,16 +305,16 @@ Below is a sample code to insert to a (Person) table:
     // INSERT INTO Person VALUES (...)
     var  expr = soar.sqlTemplate('Person').value();
         
-    // The 'option' specified below is like a command to SOAR
+    // 'cmd' below is like a command to SOAR
     // It will isnert a person whose name is 'Scott Copper'
-    var  option = {
+    var  cmd = {
             op: 'insert',
-            expr: expr,
-            data: {name: 'Scott Cooper'}
-        };
+            expr: expr
+         },
+         data = {name: 'Scott Cooper'};
         
     // Invoke soar.execute() to do the insert
-    soar.execute(option, function(err, value) {
+    soar.execute(cmd, data, null, function(err, value) {
         // 'value' contains the primary key value of the inserted
         // in this case, it will be something like:
         // {psnID: _the_psnID_of_the_newly_inserted_entity}
@@ -329,18 +331,18 @@ Below is a sample code to update a (Person) table:
     // Update Person set ... WHERE psnID=?
     var  expr = stemp.filter( {name: 'psnID'} ).value();
         
-    // The 'option' specified below is like a command to SOAR
+    // 'cmd' below is like a command to SOAR
     // It will update the person whose psnID is 1
-    // The 'data' property specify the new value of the column 'name'
-    var  option = {
+    // 'data' specify the new value of the column 'name'
+    var  cmd = {
             op: 'update',
-            expr: expr,
-            data: {name: 'John Mayer'}
-            query: {psnID: 1}
-        };
+            expr: expr
+         },
+         data = {name: 'John Mayer'},
+         query = {psnID: 1};
         
     // Invoke soar.execute() to do the update
-    soar.execute(option, function(err) {
+    soar.execute(cmd, data, query, function(err) {
         // you should check 'err' to see if anything goes wrong.
     });
 
@@ -354,16 +356,16 @@ Below is a sample code to do delete from a (Person) table:
     // DELETE FROM Person WHERE psnID=?
     var  expr = stemp.filter( {name: 'psnID'} ).value();
         
-    // The 'option' specified below is like a command to SOAR
+    // 'cmd' below is like a command to SOAR
     // It will delete the person whose psnID is 1
-    var  option = {
+    var  cmd = {
             op: 'delete',
-            expr: expr,
-            query: {psnID: 1}
-        };
+            expr: expr
+         },
+         query = {psnID: 1};
         
     // Invoke soar.execute() to do the delete
-    soar.execute(option, function(err) {
+    soar.execute(cmd, query, function(err) {
         // you should check 'err' to see if anything goes wrong.
     });
     
@@ -374,18 +376,18 @@ Doing transaction is faily simple. All you need to do is to obtain a database co
     var  expr = soar.sqlTemplate('Perons').value();
     
     soar.getConnection( function(err, conn) {
-        // remember to specify database connection in 'option'
-        var  option = {
-            op: 'insert',
-            expr: expr,
-            data: {name: 'Scott Cooper'},
-            conn: conn
-        };
+        // remember to specify database connection in 'cmd'
+        var  cmd = {
+                op: 'insert',
+                expr: expr,
+                conn: conn
+             },
+             data = {name: 'Scott Cooper'};
             
         conn.beginTransaction(function(err) {
-            soar.execute(option, function(err, data) {
+            soar.execute(option, data, null, function(err, data) {
                 if (err)
-                    conn.rollback();
+                    cocmdnn.rollback();
                 else
                     conn.commit();
             });
