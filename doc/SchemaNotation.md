@@ -22,7 +22,7 @@ Table columns are specified in a format similar to [JSON Schema](http://json-sch
 
 + **type**: specifies the primitive JSON Schema types. These are possible values: boolean, integer, number, string. Because these primitive types are not enough when defining the data type of a table column, developers can specify any valid SQL types (such as date, datetime, etc) here and those data types will be accepted by SOAR.
 
-+ **format**: provide additional information about the data type of a column. If the data type is 'integer', format can be 'int8', 'int16', or 'int64' that will be mapped to 'tinyint', 'smallint' and 'bigint' respectively. If the data tye is 'number', format can be 'double', 'float' or 'decimal(n,s)'. For 'string' data type, format can be 'text'.
++ **format**: provide additional information about the data type of a column. If the data type is 'integer', format can be 'int8', 'int16', or 'int64' and those will be mapped to 'tinyint', 'smallint' and 'bigint' respectively. If the data type is 'number', format can be 'double', 'float' or 'decimal(n,s)'. For 'string' data type, format can be 'text'.
 
 + **maxLength**: if data type is 'string', this property can be used to specify the maximum length of a string column. For example, {type: 'string', maxLength: 32} means a varchar(32) column.
 
