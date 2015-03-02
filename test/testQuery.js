@@ -135,18 +135,18 @@ describe('Test various SQL commands', function()  {
 
 describe('Test dynamic query', function()  {
     it('Simple query', function(done) {
-        var  scomp = soar.sqlTemplate('Person'),
-             expr = scomp.column(['psnID', 'name']).
-        filter( {name: 'psnID'} ).
-        value();
+        var  stemp = soar.sqlTemplate('Person'),
+             expr = stemp.column(['psnID', 'name'])
+                         .filter( {name: 'psnID'} )
+                         .value();
 
         var  option = {
-            op: 'query',
-            expr: expr,
-            query: {psnID: 1}
-        };
+                op: 'query',
+                expr: expr
+             },
+             query = {psnID: 1};
 
-        soar.execute(option, function(err, data) {
+        soar.execute(option, query, function(err, data) {
             assert( data, 'Missing psnID=1 data');
             assert.equal( data.name, 'John', 'Person name not matched.');
             done();
@@ -154,18 +154,18 @@ describe('Test dynamic query', function()  {
     });
 
     it('Simple query with alias', function(done) {
-        var  scomp = soar.sqlTemplate('Person'),
-             expr = scomp.column(['psnID', 'name AS fullName']).
-        filter( {name: 'psnID'} ).
-        value();
+        var  stemp = soar.sqlTemplate('Person'),
+             expr = stemp.column(['psnID', 'name AS fullName'])
+                         .filter( {name: 'psnID'} )
+                         .value();
 
         var  option = {
-            op: 'query',
-            expr: expr,
-            query: {psnID: 1}
-        };
+                op: 'query',
+                expr: expr
+             },
+             query = {psnID: 1};
 
-        soar.execute(option, function(err, data) {
+        soar.execute(option, query, function(err, data) {
             assert( data, 'Missing psnID=1 data');
             assert.equal( data.fullName, 'John', 'Person name not matched.');
             done();
@@ -173,17 +173,16 @@ describe('Test dynamic query', function()  {
     });
 
     it('Query without specifying table columns', function(done) {
-        var  scomp = soar.sqlTemplate('Person'),
-             expr = scomp.filter( {name: 'psnID'} ).
-        value();
+        var  stemp = soar.sqlTemplate('Person'),
+             expr = stemp.filter( {name: 'psnID'} ).value();
 
         var  option = {
-            op: 'query',
-            expr: expr,
-            query: {psnID: 1}
-        };
+                op: 'query',
+                expr: expr
+             },
+             query = {psnID: 1};
 
-        soar.execute(option, function(err, data) {
+        soar.execute(option, query, function(err, data) {
             assert( data, 'Missing psnID=1 data');
             assert.equal( data.name, 'John', 'Person name not matched.');
             done();
@@ -206,29 +205,28 @@ describe('Test dynamic query', function()  {
     });
 
     it('Update', function(done) {
-        var  scomp = soar.sqlTemplate('Person'),
-             expr = scomp.column(['psnID', 'name']).
+        var  stemp = soar.sqlTemplate('Person'),
+             expr = stemp.column(['psnID', 'name']).
         filter( {name: 'psnID'} ).
         value();
 
         var  option = {
-            op: 'update',
-            expr: expr,
-            data: {name: 'John Mayer'},
-            query: {psnID: 1}
-        };
+                op: 'update',
+                expr: expr
+             },
+             data = {name: 'John Mayer'},
+             query = {psnID: 1};
 
-        soar.execute(option, function(err) {
+        soar.execute(option, data, query, function(err) {
             assert(!err, 'Failed to do update.');
 
             option.op = 'query';
-            soar.execute(option, function(err, data) {
+            soar.execute(option, query, function(err, data) {
                 assert.equal( data.name, 'John Mayer', 'Person name not matched.');
 
                 // restore data
                 option.op = 'update';
-                option.data = {name: 'John'};
-                soar.execute(option, function(err) {
+                soar.execute(option, {name: 'John'}, query, function(err) {
                     assert(!err, 'Failed to do update.');
                     done();
                 });
@@ -237,28 +235,26 @@ describe('Test dynamic query', function()  {
     });
 
     it('Update without specifying table columns', function(done) {
-        var  scomp = soar.sqlTemplate('Person'),
-             expr = scomp.filter( {name: 'psnID'} ).
-        value();
+        var  stemp = soar.sqlTemplate('Person'),
+             expr = stemp.filter( {name: 'psnID'} ).value();
 
         var  option = {
-            op: 'update',
-            expr: expr,
-            data: {name: 'John Mayer'},
-            query: {psnID: 1}
-        };
+                op: 'update',
+                expr: expr
+             },
+             data = {name: 'John Mayer'},
+             query = {psnID: 1};
 
-        soar.execute(option, function(err) {
+        soar.execute(option, data, query, function(err) {
             assert(!err, 'Failed to do update.');
 
             option.op = 'query';
-            soar.execute(option, function(err, data) {
+            soar.execute(option, query, function(err, data) {
                 assert.equal( data.name, 'John Mayer', 'Person name not matched.');
 
                 // restore data
                 option.op = 'update';
-                option.data = {name: 'John'};
-                soar.execute(option, function(err) {
+                soar.execute(option, {name: 'John'}, query, function(err) {
                     assert(!err, 'Failed to do update.');
                     done();
                 });
@@ -267,31 +263,27 @@ describe('Test dynamic query', function()  {
     });
 
     it('Insert and delete with transactions', function(done) {
-        var  scomp = soar.sqlTemplate('Person'),
-             expr = scomp.column(['psnID', 'name']).
-        filter( {name: 'psnID'} ).
-        value();
+        var  stemp = soar.sqlTemplate('Person'),
+             expr = stemp.column(['psnID', 'name'])
+                         .filter( {name: 'psnID'} )
+                         .value();
 
         soar.getConnection( function(err, conn) {
             conn.beginTransaction(function(err) {
                 assert(!err, 'Transaction failed to get started.');
 
                 var  option = {
-                    op: 'insert',
-                    expr: expr,
-                    data: {name: 'Scott Cooper'},
-                    conn: conn
-                };
+                        op: 'insert',
+                        expr: expr,
+                        conn: conn
+                     },
+                     data = {name: 'Scott Cooper'};
 
-                soar.execute(option, function(err, value) {
+                soar.execute(option, data, null, function(err, value) {
                     assert(value, 'Failed to insert');
 
                     option.op = 'delete';
-                    //option.query = {psnID: psnID};
-                    option.query = value;
-                    delete  option.data;
-
-                    soar.execute(option, function(err) {
+                    soar.execute(option, value, function(err) {
                         assert(!err, 'Failed to delete.');
                         conn.commit( function(err) {
                             assert(!err, 'Transaction failed to commit.');
@@ -304,30 +296,25 @@ describe('Test dynamic query', function()  {
     });
 
     it('Insert and delete without specifying table columns', function(done) {
-        var  scomp = soar.sqlTemplate('Person'),
-             expr = scomp.filter( {name: 'psnID'} ).
-        value();
+        var  stemp = soar.sqlTemplate('Person'),
+             expr = stemp.filter( {name: 'psnID'} ).value();
 
         soar.getConnection( function(err, conn) {
             conn.beginTransaction(function(err) {
                 assert(!err, 'Transaction failed to get started.');
 
                 var  option = {
-                    op: 'insert',
-                    expr: expr,
-                    data: {name: 'Scott Cooper'},
-                    conn: conn
-                };
+                        op: 'insert',
+                        expr: expr,
+                        conn: conn
+                     },
+                     data = {name: 'Scott Cooper'};
 
-                soar.execute(option, function(err, value) {
+                soar.execute(option, data, null, function(err, value) {
                     assert(value, 'Failed to insert');
 
                     option.op = 'delete';
-                    //option.query = {psnID: psnID};
-                    option.query = value;
-                    delete  option.data;
-
-                    soar.execute(option, function(err) {
+                    soar.execute(option, value, function(err) {
                         assert(!err, 'Failed to delete.');
                         conn.commit( function(err) {
                             assert(!err, 'Transaction failed to commit.');

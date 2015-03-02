@@ -44,7 +44,7 @@ Below are short cuts to major sections of this guide:
     + [sqlTemplate.join()](#sbiJoin)
     + [sqlTemplate.column()](#sbiColumn)
     + [sqlTemplate.filter()](#sbiFilter)
-    + [sqlTemplate.chainFilter()](#sbiChainFilter)
+    + [sqlTemplate.chainFilters()](#sbiChainFilter)
     + [sqlTemplate.extra()](#sbiExtra)
     + [sqlTemplate.value()](#sbiValue)
   + [Use cases](#dynamicCase)
@@ -153,17 +153,17 @@ SQL template is the other (and newer) programming style SOAR supported. SQL temp
     var  soar = require('soarjs');
     
     var  stmp = soar.sqlTemplate('Person');
-    stmp.column(['id', 'addr AS address', 'age']).
-    filter( {name: 'age', op: '>='} ).
-    extra( 'ORDER BY id' );
+    stmp.column(['id', 'addr AS address', 'age'])
+        .filter( {name: 'age', op: '>='} )
+        .extra( 'ORDER BY id' );
     
-    var  option = {
-    	op: list,
-    	expr: stmp.value(),
-    	query: {age: 18}
-    }
+    var  cmd = {
+    	    op: list,
+    	    expr: stmp.value()
+         },
+         query = {age: 18};
     
-    soar.execute(option, function(err, list) {
+    soar.execute(cmd, query, function(err, list) {
     	// 'list' is the query result
     });
   
@@ -174,21 +174,19 @@ _soar.sqlTempalte(tableName)_ takes a table name as its input and returns a **SQ
 Belows are APIs related to programming with SQL templates:
 
 <a name="soarExecute"></a>
-##### soar.execute(options, cb)
+##### soar.execute(cmd, data, query, cb)
 
-This function can be used to execute SQL queries (query, list, insert, update and delete). The _options_ parameter has the following properties:
+This function can be used to execute SQL queries (query, list, insert, update and delete). The **_data_** parameter is a JSON object which contains data to be inserted or updated to a table. The **_query_** parameter is a JSON object which specifies actual query values. The **_cmd_** parameter has the following properties:
 
 + op: should be one of the following: 'query', 'list', 'insert', 'update' and 'delete'.
 
-+ sqlExpr: a SQL expression which can be built using SQL templates as shown in the above sample code.
-
-+ data: a plain Javascript object which contains data to be inserted or updated to a table. This is required for **insert** or **update**.
-
-+ query: a plain Javascript object which can be used to specify query values.
++ expr: a SQL expression which can be built using SQL templates as shown in the above sample code.
 
 + range: specifies the window of a result set. The _range_ object can be created using the _soar.range()_ function.
 
-_cb_ is the callback function which takes an error and a result object (for query, list and insert operations).
+Note that the **_data_** and **_query_** parameters were used to be included as the properties of the **_cmd_** parameter. However, including data and query in the **_cmd_** paramater would reduce the possibilities of reusing the **_cmd_** parameter which actually defines how to access DBMS. As a result, data and query are extracted fromm the **_cmd_** parameter sinece v1.1.4. The old signature still works, but it's deprecated.
+
+_cb_ is the callback function which receives an error and sometimes a result object (when it's a query, list or insert operation).
 
 <a name="soarSBI"></a>
 ##### soar.sqlTemplate(tableName)
@@ -229,10 +227,10 @@ This function is used to set query conditions (filter). The primitive format of 
 Note that this function should be called just once for each SQL templat. Otherwise the new setting will replace the old one. 
 
 <a name="sbiChainFilter"></a>
-##### sqlTemplate.chainFilter(op, filters)
+##### sqlTemplate.chainFilters(op, filters)
 If you want to make a compound filter (ANDed or ORed filters), this is the function you need. _op_ should be 'AND' or 'OR', and _filters_ is an array of filters. Below is an example:
 
-    var  orFilters = sbi.chainFilter('OR', [
+    var  orFilters = sbi.chainFilters('OR', [
         {name: 'region', op: '='},
         {name: 'age', op: '>'}
     ]);

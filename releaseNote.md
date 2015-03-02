@@ -1,3 +1,8 @@
+1.1.4
+=====
+
++ Changed the signature of the _execute()_ function so it's easier to reuse SQL templates. The old form still works, but is deprecated.
+
 1.1.3
 =====
 
