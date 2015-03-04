@@ -1,3 +1,10 @@
+1.1.7
+=====
+
++ When doing join, if the query condition is not specified, the previous releases failed to generate a correct statement. The bug is fixed in this release.
+
++ Also note that when doing table join both columns and query conditions cannot be omitted.
+
 1.1.6
 =====
 
