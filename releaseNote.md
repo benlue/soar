@@ -1,3 +1,8 @@
+1.1.6
+=====
+
++ Manipulating table schemas are even easier now. You can call schema maintenance functions such as _createTable()_, _alterTable()_, etc without having to get a database connection first.
+
 1.1.5
 =====
 

@@ -5,7 +5,7 @@ SOAR
 SOAR (Simple Object Adapter for Relational database) is a relational database access tool. It allows developers to access database with/as Javascript objects. Unlike most ORM solutions, SOAR gives back to developers the full control of how SQL statements are generated. SOAR offers some benefits of ORM and tries to avoid its overhead and problems. Also, if you need to access multiple databases in an application, SOAR would greatly simplify the task for you.
 
 ## Why SOAR
-Most developers would agree it's not a good idea to compose SQL statements inside programs. It's tedious and error-prone. So there comes ORM which was intended to provide a cleaner programming model. Unfortunately, ORM could turn into a monster if the DB schema is full of references.
+Most developers would agree it's not a good idea to directly compose SQL statements inside programs. It's tedious and error-prone. So there comes ORM which was intended to provide a cleaner programming model. Unfortunately, ORM could turn into a monster if the DB schema is full of references.
 
 Maybe what developers need is just a light-weight solution to harness SQL. Consider a DB access tool with the following feaures:
 
@@ -417,27 +417,31 @@ Doing transaction is faily simple. All you need to do is to obtain a database co
 
 <a name="schema"></a>
 ## Schema Management
-Besides accessing data, you can also use SOAR to manage table schema. First of all, you have to get the schema manager from SOAR:
-
-    var  schManager = SOAR.getSchemaManager();
-    
-With the schema manager, you can do:
+Besides accessing data, you can also use SOAR to manage table schema. Below are what you can do:
 
 <a name="createTable"></a>
-### createTable(conn, schema, cb)
-This function will create a database table. _conn_ is a database connection which can be obtained by _soar.getConnection()_. _schema_ is a **schema notation** object which defines a table schema. Please refer to [schema notation](https://github.com/benlue/soar/blob/master/doc/SchemaNotation.md) to know about what it is and how to create a schema notation. _cb_ is a callback function when table creation is successful or erred.
+### createTable(schema, cb)
+This function will create a database table. _schema_ is a **schema notation** object which defines a table schema. Please refer to [schema notation](https://github.com/benlue/soar/blob/master/doc/SchemaNotation.md) to know about what it is and how to create a schema notation. _cb_ is a callback function when table creation is successful or erred.
+
+If you want to call _createTable()_ with a specific database conection object, you can do _createTable(conn, schema, cb)_.
 
 <a name="alterTable"></a>
-### alterTable(conn, schema, cb)
-This function can be used to alter table schema. _conn_ is a database connection which can be obtained by _soar.getConnection()_. _schema_ is a **schema notation** object which defines a table schema. Please refer to [schema notation](https://github.com/benlue/soar/blob/master/doc/SchemaNotation.md) to know about what it is and how to create a schema notation. _cb_ is a callback function when altering table is successfully done or erred.
+### alterTable(schema, cb)
+This function can be used to alter table schema. _schema_ is a **schema notation** object which defines a table schema. Please refer to [schema notation](https://github.com/benlue/soar/blob/master/doc/SchemaNotation.md) to know about what it is and how to create a schema notation. _cb_ is a callback function when altering table is successfully done or erred.
+
+If you want to call _alterTable()_ with a specific database conection object, you can do _alterTable(conn, schema, cb)_.
 
 <a name="deleteTable"></a>
-### deleteTable(conn, tableName, cb)
-This function can be used to delete (drop) a table. _conn_ is a database connection which can be obtained by _soar.getConnection()_. _tableName_ is the name of the table to be dropped. _cb_ is a callback function when deleting table is successfully done or erred.
+### deleteTable(tableName, cb)
+This function can be used to delete (drop) a table. _tableName_ is the name of the table to be dropped. _cb_ is a callback function when deleting table is successfully done or erred.
+
+If you want to call _deleteTable()_ with a specific database conection object, you can do _deleteTable(conn, schema, cb)_.
 
 <a name="describeTable"></a>
-### describeTable(conn, tableName, cb)
+### describeTable(tableName, cb)
 This function can be used to derive schema from an existing table. _tableName_ is the name of the table to be derived. _cb(err, schema)_ is the callback function to return the derived schema. The returned schema object is the same as the **schema notation** as described in [this document](https://github.com/benlue/soar/blob/master/doc/SchemaNotation.md).
+
+If you want to call _describeTable()_ with a specific database conection object, you can do _describeTable(conn, schema, cb)_.
 
 <a name="debug"></a>
 ## Debug Messages
