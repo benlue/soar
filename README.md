@@ -241,7 +241,7 @@ This function can be used to add table columns. If _column_ is a string, the spe
 ##### sqlTemplate.filter(filter)
 This function is used to set query conditions (filter). The primitive format of a filter is a plain object with the following properties:
 
-+ name: name of the filter. It's also used as the key to retrieve filter value from a query object.
++ name: name of the filter. It's also used as the key to retrieve filter value from a query object. This property is required.
 + field: the real column name in a table. If this property is missing, the _name_ property will be used instead.
 + op: what comparator to be used. It can be '>', '=' or 'IS NULL', etc.
 + noArg: when a query operation does not require argument (e.g. IS NULL), this property should be set to true.

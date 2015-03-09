@@ -137,7 +137,7 @@ describe('Test dynamic query', function()  {
     it('Simple query', function(done) {
         var  stemp = soar.sqlTemplate('Person'),
              expr = stemp.column(['psnID', 'name'])
-                         .filter( {name: 'psnID'} )
+                         .filter( {name: 'psnID', op: '='} )
                          .value();
 
         var  option = {
@@ -156,7 +156,7 @@ describe('Test dynamic query', function()  {
     it('Simple query with alias', function(done) {
         var  stemp = soar.sqlTemplate('Person'),
              expr = stemp.column(['psnID', 'name AS fullName'])
-                         .filter( {name: 'psnID'} )
+                         .filter( {name: 'psnID', op: '='} )
                          .value();
 
         var  option = {
@@ -174,7 +174,7 @@ describe('Test dynamic query', function()  {
 
     it('Query without specifying table columns', function(done) {
         var  stemp = soar.sqlTemplate('Person'),
-             expr = stemp.filter( {name: 'psnID'} ).value();
+             expr = stemp.filter( {name: 'psnID', op: '='} ).value();
 
         var  option = {
                 op: 'query',
@@ -223,7 +223,7 @@ describe('Test dynamic query', function()  {
     it('Update', function(done) {
         var  stemp = soar.sqlTemplate('Person'),
              expr = stemp.column(['psnID', 'name']).
-        filter( {name: 'psnID'} ).
+        filter( {name: 'psnID', op: '='} ).
         value();
 
         var  option = {
@@ -252,7 +252,7 @@ describe('Test dynamic query', function()  {
 
     it('Update without specifying table columns', function(done) {
         var  stemp = soar.sqlTemplate('Person'),
-             expr = stemp.filter( {name: 'psnID'} ).value();
+             expr = stemp.filter( {name: 'psnID', op: '='} ).value();
 
         var  option = {
                 op: 'update',
@@ -307,7 +307,7 @@ describe('Test dynamic query', function()  {
     it('Insert and delete with transactions', function(done) {
         var  stemp = soar.sqlTemplate('Person'),
              expr = stemp.column(['psnID', 'name'])
-                         .filter( {name: 'psnID'} )
+                         .filter( {name: 'psnID', op: '='} )
                          .value();
 
         soar.getConnection( function(err, conn) {
@@ -339,7 +339,7 @@ describe('Test dynamic query', function()  {
 
     it('Insert and delete without specifying table columns', function(done) {
         var  stemp = soar.sqlTemplate('Person'),
-             expr = stemp.filter( {name: 'psnID'} ).value();
+             expr = stemp.filter( {name: 'psnID', op: '='} ).value();
 
         soar.getConnection( function(err, conn) {
             conn.beginTransaction(function(err) {

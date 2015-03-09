@@ -1,3 +1,8 @@
+1.1.8
+=====
+
++ Bug fixes for using the "field" attribute in filters for SQL templates.
+
 1.1.7
 =====
 

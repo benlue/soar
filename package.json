@@ -1,6 +1,6 @@
 {
   "name": "soarjs",
-  "version": "1.1.7",
+  "version": "1.1.8",
   "description": "A simple relational DB to entity mapper.",
   "engines": "0.10.21",
   "main": "lib/soar.js",
