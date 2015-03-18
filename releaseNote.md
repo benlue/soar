@@ -1,3 +1,8 @@
+1.1.9
+=====
+
++ Fixed a bug caused when multiple DB requests are issued in parallel.
+
 1.1.8
 =====
 

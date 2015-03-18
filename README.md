@@ -22,7 +22,7 @@ Maybe what developers need is just a light-weight solution to harness SQL. Consi
 So, here comes SOAR.
 
 ## A simple example
-The following example should get you interested in SOAR. Assuming you have a table called 'Person', consider the sample code below:
+The following example shows how easy it is to access DB using SOAR. Assuming you have a table called 'Person', consider the sample code below:
 
     var  soar = requrie('soarjs');
     
@@ -280,7 +280,7 @@ If you expect a table query should return only one entity (even though there may
     
     // 'expr' is a SQL expression equivalent to 
     // SELECT * FROM Person WHERE psnID=?
-    var  expr = stemp.filter( {name: 'psnID'} ).value();
+    var  expr = stemp.filter( {name: 'psnID', op: '='} ).value();
         
     // 'cmd' below is like a command to SOAR
     // It will query the person whose psnID is 1
@@ -350,7 +350,7 @@ Below is a sample code to update a (Person) table:
     
     // 'expr' is a SQL expression equivalent to 
     // Update Person set ... WHERE psnID=?
-    var  expr = stemp.filter( {name: 'psnID'} ).value();
+    var  expr = stemp.filter( {name: 'psnID', op: '='} ).value();
         
     // 'cmd' below is like a command to SOAR
     // It will update the person whose psnID is 1
@@ -408,7 +408,7 @@ Doing transaction is faily simple. All you need to do is to obtain a database co
         conn.beginTransaction(function(err) {
             soar.execute(option, data, null, function(err, data) {
                 if (err)
-                    cocmdnn.rollback();
+                    conn.rollback();
                 else
                     conn.commit();
             });
