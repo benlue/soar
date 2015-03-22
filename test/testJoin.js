@@ -20,7 +20,7 @@ describe('Test table joins', function()  {
     	var  expr = soar.sqlTemplate('Person AS psn')
     					 .join({table: 'PsnLoc AS pl', onWhat: 'psn.psnID = pl.psnID'})
     					 .join({table: 'GeoLoc AS geo', onWhat: 'pl.geID=geo.geID'})
-    					 .column(['psn.psnID', 'name', 'latitude', 'longitude'])
+    					 .column(['psn.psnID', 'psn.name', 'latitude', 'longitude'])
     					 .filter({name: 'psn.psnID', op: '='})
     					 .value(),
     		 cmd = {
@@ -36,5 +36,23 @@ describe('Test table joins', function()  {
 
     		done();
     	})
+    });
+
+    it('join with auto fill', function(done) {
+        var  stemp = soar.sqlTemplate('Person AS psn')
+                         .join({table: 'PsnLoc As pl', onWhat: 'psn.psnID=pl.psnID'})
+                         .join({table: 'GeoLoc AS geo', onWhat: 'pl.geID=geo.geID'})
+                         .column(['psn.name', 'geo.latitude']);
+
+        var  cmd = {
+                op: 'list',
+                expr: stemp.value()
+             };
+
+        soar.execute(cmd, function(err, list) {
+            //console.log( JSON.stringify(list, null, 4) );
+            assert.equal(list.length, 2, '2 entries');
+            done();
+        });
     });
 });

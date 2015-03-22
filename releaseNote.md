@@ -1,3 +1,10 @@
+1.1.10
+======
+
++ cleaned up places where connections were not properly released.
+
++ fixed a join problem when **soar** has to automatically fill in the query conditions.
+
 1.1.9
 =====
 

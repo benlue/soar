@@ -411,6 +411,9 @@ Doing transaction is faily simple. All you need to do is to obtain a database co
                     conn.rollback();
                 else
                     conn.commit();
+                    
+                // remember to release the connection
+                conn.release();			
             });
         };
     });

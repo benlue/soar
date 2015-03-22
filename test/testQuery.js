@@ -92,6 +92,7 @@ describe('Test CRUD using data views', function()  {
                         assert(!err, 'Failed to delete.');
                         conn.commit( function(err) {
                             assert(!err, 'Transaction failed to commit.');
+                            conn.release();
                             done();
                         });
                     });
