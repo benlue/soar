@@ -1,3 +1,10 @@
+1.2.0
+=====
+
++ Now it's no longer necessary to use .value() to convert a sql template into a sql expression.
+
++ A few minor bug fixes.
+
 1.1.10
 ======
 

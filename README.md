@@ -5,30 +5,26 @@ SOAR
 SOAR (Simple Object Adapter for Relational database) is a relational database access tool. It allows developers to access database with/as Javascript objects. Unlike most ORM solutions, SOAR gives back to developers the full control of how SQL statements are generated. SOAR offers some benefits of ORM and tries to avoid its overhead and problems. Also, if you need to access multiple databases in an application, SOAR would greatly simplify the task for you.
 
 ## Why SOAR
-Most developers would agree it's not a good idea to directly compose SQL statements inside programs. It's tedious and error-prone. So there comes ORM which was intended to provide a cleaner programming model. Unfortunately, ORM could turn into a monster if the DB schema is full of references.
+Most developers would agree it's not a good idea to directly compose SQL statements inside programs. It's tedious and error-prone.
+It would be nice to have a light-weight tool to harness SQL with the following feaures:
 
-Maybe what developers need is just a light-weight solution to harness SQL. Consider a DB access tool with the following feaures:
++ Reusable: you can formulate a SQL statement into a template. You can later invoke that SQL template with various query conditions.
 
-+ Query a DB and return the value as a plain Javascript object or array of objects. If you want to insert or update a record, you can simply put data in a Javascript object and write it out to DB.
++ Less tedious: you don't have to hand code the SQL where clause any more. Just specify the query values and SOAR will do the tedious works for you.
 
-+ Unlike most ORM solutions, you have complete control of how SQL is generated and applied.
++ Multiple database access: a simple way to access multiple databases within an application.
 
-+ You can name a SQL statement or even formulate it into a file or a Javascript template. You can later invoke that SQL statement by just referring to its name (file name or template name).
++ Full control: unlike most ORM solutions, you have full control of how SQL is generated and applied.
 
-+ A simple way to access multiple databases within an application.
-
-+ Composing the SQL WHERE clause inside programs is very tedious and error-prone. Is there a tool to dynamically generate SQL query conditions based on query values?
-
-So, here comes SOAR.
 
 ## A simple example
-The following example shows how easy it is to access DB using SOAR. Assuming you have a table called 'Person', consider the sample code below:
+The following example shows how easily to access DB using SOAR. Assuming you have a table called 'Person', consider the sample code below:
 
     var  soar = requrie('soarjs');
     
     var  cmd = {
                 op: 'list',
-                expr: soar.sqlTemplate('Person').value()
+                expr: soar.sqlTemplate('Person')
                };
                
     soar.execute(cmd, {age: 25}, function(err, list) {
@@ -39,9 +35,17 @@ That's similar to issuing a SQL statement like:
 
     SELECT * FROM Person WHERE age = 25;
     
-Better yet, every matched data entry will be wrapped up as a JSON object and packed into an array for you.
+Unlike the sql statement, your can easily resue the command:
+
+    soar.execute(cmd, {hobby: "coding"}, function(err, list) {
+        // list persons whose hobby is to do coding.
+    });
+    
 
 ## What's New
+
++ It's no longer necessary to convert a sql template into a sql expression by the _value()_ call like _var expr = sqlTemplate.value()_. Actually, Sql templates and expressions will be treated as the same (v.1.2.0).
+
 Please refer to the [release notes](https://github.com/benlue/soar/blob/master/releaseNote.md) for details.
 
 ## Installation
@@ -66,7 +70,6 @@ Below are short cuts to major sections of this guide:
     + [sqlTemplate.filter()](#sbiFilter)
     + [sqlTemplate.chainFilters()](#sbiChainFilter)
     + [sqlTemplate.extra()](#sbiExtra)
-    + [sqlTemplate.value()](#sbiValue)
   + [Use cases](#dynamicCase)
     + [query](#dynamicQuery)
     + [list](#dynamicList)
@@ -79,7 +82,7 @@ Below are short cuts to major sections of this guide:
   + [alterTable()](#alterTable)
   + [deleteTable()](#deleteTable)
   + [describeTable()](#describeTable)
-+ [Debugging messages](#debug)
++ [Debug messages](#debug)
 
 <a name="dbSetup"></a>
 ## DB Settings
@@ -174,14 +177,14 @@ SQL template is the other (and newer) programming style SOAR supported. SQL temp
 
     var  soar = require('soarjs');
     
-    var  stmp = soar.sqlTemplate('Person');
-    stmp.column(['id', 'addr AS address', 'age'])
-        .filter( {name: 'age', op: '>='} )
-        .extra( 'ORDER BY id' );
+    var  stmp = soar.sqlTemplate('Person')
+                    .column(['id', 'addr AS address', 'age'])
+                    .filter( {name: 'age', op: '>='} )
+                    .extra( 'ORDER BY id' );
     
     var  cmd = {
     	    op: list,
-    	    expr: stmp.value()
+    	    expr: stmp
          },
          query = {age: 18};
     
@@ -193,7 +196,7 @@ _soar.sqlTempalte(tableName)_ takes a table name as its input and returns a **SQ
 
 <a name="dynamicAPI"></a>
 #### API
-Belows are APIs related to programming with SQL templates:
+Belows are APIs related to SQL templates:
 
 <a name="soarExecute"></a>
 ##### soar.execute(cmd, data, query, cb)
@@ -208,9 +211,9 @@ This function can be used to execute SQL queries (query, list, insert, update an
 
 + conn: a database connection object. You usually don't have to specify this property unless you want to do transactions.
 
-Note that the **_data_** and **_query_** parameters were used to be included as the properties of the **_cmd_** parameter. However, including data and query in the **_cmd_** paramater would reduce the possibilities of reusing the **_cmd_** parameter which actually defines how to access DBMS. As a result, data and query are extracted from the **_cmd_** parameter sinece v1.1.4. The old signature still works, but it's deprecated.
+(Note that the **_data_** and **_query_** parameters were used to be included as the properties of the **_cmd_** parameter. However, including data and query in the **_cmd_** paramater would reduce the possibilities of reusing the **_cmd_** parameter which actually defines how to access DBMS. As a result, data and query are extracted from the **_cmd_** parameter sinece v1.1.4. The old signature still works, but it's deprecated.)
 
-If the **_data_** parameter is not needed, the function can be simplified to _execute(cmd, query, cb)_.
+If the **_data_** parameter is not needed, the function signature can be simplified to _execute(cmd, query, cb)_.
 
 _cb_ is the callback function which receives an error and sometimes a result object (when it's a query, list or insert operation).
 
@@ -264,10 +267,6 @@ The resulting filter (orFilters) is a compound filter ORing two filters (region 
 ##### sqlTemplate.extra(extra)
 This function can add extra options to a SQL statement. _extra_ is a string with possible values like 'GROUP BY col_name' or 'ORDER BY col_name'.
 
-<a name="sbiValue"></a>
-##### sqlTemplate.value()
-When you've done with the SQL composition, you can call this function to get the SQL template which can be fed to the _soar.execute()_ function to access databases as you wish.
-
 <a name="dynamicCase"></a>
 #### Use Cases
 Below we'll show how to use _soar.execute()_ to do query, list, insert, update and delete. We'll assume a 'Person' table and use it in the following sample codes.
@@ -280,7 +279,7 @@ If you expect a table query should return only one entity (even though there may
     
     // 'expr' is a SQL expression equivalent to 
     // SELECT * FROM Person WHERE psnID=?
-    var  expr = stemp.filter( {name: 'psnID', op: '='} ).value();
+    var  expr = stemp.filter( {name: 'psnID', op: '='} );
         
     // 'cmd' below is like a command to SOAR
     // It will query the person whose psnID is 1
@@ -303,7 +302,7 @@ If your query will return multiple entities, you should do a **list**. Below is 
     
     // 'expr' is a SQL expression equivalent to 
     // SELECT * FROM Person WHERE age > ?
-    var  expr = stemp.filter( {name: 'age', op: '>'} ).value();
+    var  expr = stemp.filter( {name: 'age', op: '>'} );
         
     // 'cmd' below is like a command to SOAR
     // It will list all persons whose age is greater than 25
@@ -324,7 +323,7 @@ Below is a sample code to insert to a (Person) table:
 
     // 'expr' is a SQL expression equivalent to 
     // INSERT INTO Person VALUES (...)
-    var  expr = soar.sqlTemplate('Person').value();
+    var  expr = soar.sqlTemplate('Person');
         
     // 'cmd' below is like a command to SOAR
     // It will isnert a person whose name is 'Scott Copper'
@@ -350,7 +349,7 @@ Below is a sample code to update a (Person) table:
     
     // 'expr' is a SQL expression equivalent to 
     // Update Person set ... WHERE psnID=?
-    var  expr = stemp.filter( {name: 'psnID', op: '='} ).value();
+    var  expr = stemp.filter( {name: 'psnID', op: '='} );
         
     // 'cmd' below is like a command to SOAR
     // It will update the person whose psnID is 1
@@ -375,7 +374,7 @@ Below is a sample code to do delete from a (Person) table:
     
     // 'expr' is a SQL expression equivalent to 
     // DELETE FROM Person WHERE psnID=?
-    var  expr = stemp.filter( {name: 'psnID'} ).value();
+    var  expr = stemp.filter( {name: 'psnID'} );
         
     // 'cmd' below is like a command to SOAR
     // It will delete the person whose psnID is 1
@@ -394,7 +393,7 @@ Below is a sample code to do delete from a (Person) table:
 ##### Transaction
 Doing transaction is faily simple. All you need to do is to obtain a database connection and pass it to _soar.execute()_. Below is the sample code:
 
-    var  expr = soar.sqlTemplate('Perons').value();
+    var  expr = soar.sqlTemplate('Perons');
     
     soar.getConnection( function(err, conn) {
         // remember to specify database connection in 'cmd'
@@ -408,12 +407,20 @@ Doing transaction is faily simple. All you need to do is to obtain a database co
         conn.beginTransaction(function(err) {
             soar.execute(option, data, null, function(err, data) {
                 if (err)
-                    conn.rollback();
+                    conn.rollback(function() {
+                        // remember to release the connection
+                        conn.release();
+                    });
                 else
-                    conn.commit();
-                    
-                // remember to release the connection
-                conn.release();			
+                    conn.commit(function(err) {
+                        if (err)
+                            conn.rollback(function() {
+                                // remember to release the connection
+                                conn.release();
+                            });
+                        else
+                            conn.release();
+                    });		
             });
         };
     });

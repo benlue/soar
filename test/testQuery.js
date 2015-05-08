@@ -134,12 +134,11 @@ describe('Test CRUD using data views', function()  {
 });
 
 
-describe('Test dynamic query', function()  {
+describe('Test sql expression', function()  {
     it('Simple query', function(done) {
         var  stemp = soar.sqlTemplate('Person'),
              expr = stemp.column(['psnID', 'name'])
-                         .filter( {name: 'psnID', op: '='} )
-                         .value();
+                         .filter( {name: 'psnID', op: '='} );
 
         var  option = {
                 op: 'query',

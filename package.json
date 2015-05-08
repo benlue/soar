@@ -1,6 +1,6 @@
 {
   "name": "soarjs",
-  "version": "1.1.10",
+  "version": "1.2.0",
   "description": "A simple relational DB to entity mapper.",
   "engines": "0.10.21",
   "main": "lib/soar.js",
@@ -12,8 +12,8 @@
     "Node.js",
     "COIMOTION",
     "ORM",
-    "coserv",
-    "mySQL"
+    "mySQL",
+    "sql"
   ],
   "author": {
     "name": "Ben Lue, Gocharm Inc."
