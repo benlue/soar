@@ -165,7 +165,7 @@ If you'll use SQL templates instead of data views to access databases, you can o
 
 <a name="accessDB"></a>
 ## Access Database
-SOAR offers two types of programming styles to access databases. One is via "Data View" definitions, and the other is the SQL templates style. 
+SOAR offers two types of programming styles to access databases: using sql templates or "Data View" XML definitions. 
 
 <a name="dynamicSQL"></a>
 ### Access with SQL Templates
