@@ -35,7 +35,7 @@ That's similar to issuing a SQL statement like:
 
     SELECT * FROM Person WHERE age = 25;
     
-Unlike the sql statement, your can easily resue the command:
+Unlike the sql statement, your can easily resue the command (this time with different query conditions):
 
     soar.execute(cmd, {hobby: "coding"}, function(err, list) {
         // list persons whose hobby is to do coding.
