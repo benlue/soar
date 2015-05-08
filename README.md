@@ -44,7 +44,7 @@ Unlike the sql statement, your can easily resue the command (this time with diff
 
 ## What's New
 
-+ It's no longer necessary to convert a sql template into a sql expression by the _value()_ call like _var expr = sqlTemplate.value()_. Actually, Sql templates and expressions will be treated as the same (v.1.2.0).
++ It's no longer necessary to convert a sql template into a sql expression by the _value()_ function as: _var expr = sqlTemplate.value()_. Actually, Sql templates and expressions will be treated as the same (v.1.2.0).
 
 Please refer to the [release notes](https://github.com/benlue/soar/blob/master/releaseNote.md) for details.
 
@@ -60,7 +60,6 @@ Below are short cuts to major sections of this guide:
   + [configure programmatically](#configProg)
   + [Multiple database configuration](#multidb)
 + [Access database](#accessDB)
-  + [Access via data view](#dataView)
   + [Access with SQL templates](#dynamicSQL)
   + [API](#dynamicAPI)
     + [soar.execute()](#soarExecute)
@@ -77,6 +76,7 @@ Below are short cuts to major sections of this guide:
     + [update](#dynamicUpdate)
     + [delete](#dynamicDelete)
     + [How to do transactions](#transaction)
+  + [Access via data view](#dataView)
 + [Schema management](#schema)
   + [createTable()](#createTable)
   + [alterTable()](#alterTable)
@@ -167,13 +167,9 @@ If you'll use SQL templates instead of data views to access databases, you can o
 ## Access Database
 SOAR offers two types of programming styles to access databases. One is via "Data View" definitions, and the other is the SQL templates style. 
 
-<a name="dataView"></a>
-### Access via Data View
-Data view is a XML file used to formulate SQL queries. By parameterizing and formulating SQL queries in XML format, SQL queries can be easily reused and managed. For details about how to use "data view" to access databases, please refer to [Using Data View To Access Database](https://github.com/benlue/soar/blob/master/doc/AccessWithDataView.md).
-
 <a name="dynamicSQL"></a>
 ### Access with SQL Templates
-SQL template is the other (and newer) programming style SOAR supported. SQL templates allow you to compose and reuse SQL queries in a clean and managable way. Let's start with an example:
+SQL templates allow you to compose and reuse SQL queries in a clean and managable way. Let's start with an example:
 
     var  soar = require('soarjs');
     
@@ -424,6 +420,10 @@ Doing transaction is faily simple. All you need to do is to obtain a database co
             });
         };
     });
+
+<a name="dataView"></a>
+### Access via Data View
+Data view is a XML file used to formulate SQL queries. By parameterizing and formulating SQL queries in XML format, SQL queries can be easily reused and managed. For details about how to use "data view" to access databases, please refer to [Using Data View To Access Database](https://github.com/benlue/soar/blob/master/doc/AccessWithDataView.md).
 
 <a name="schema"></a>
 ## Schema Management
