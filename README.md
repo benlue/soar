@@ -1,5 +1,13 @@
 SOAR
 ====
+## Please use sql-soar instead
+**soarjs** was originally a Java project and I converted it to a node module a year ago. Back to the Java days, writing JDBC programs is really a pain, especially when I have to convert a result set into objects.
+
+When rewriting **soar** to work for node.js, I quickly found out object wrapping is not that a big program on node as the node-mysql module has already done that. On the other hand, generating SQL statements is still a heck of a job and that's where the **soar** project can help developers a lot.
+
+It seems using JSON to represent table schema is much more straight forward than using XML, so it may be a better idea to just choose JSON over XML. The **soarjs** module is clogged with the requirements to support both and it started to bug me that I cannot make the API really clean and fun to use.
+
+So I created a new project, [sql-soar](https://www.npmjs.com/package/sql-soar) which is based on the original **soarjs** project. With the new project, I got the freedom to make its API really clean and fun to use. If you're a **soarjs** developer, please switch to [sql-soar](https://www.npmjs.com/package/sql-soar) and have fun!
 
 ## What Is SOAR
 SOAR (Simple Object Adapter for Relational database) is a relational database access tool. It allows developers to access database with/as Javascript objects. Unlike most ORM solutions, SOAR gives back to developers the full control of how SQL statements are generated. SOAR offers some benefits of ORM and tries to avoid its overhead and problems. Also, if you need to access multiple databases in an application, SOAR would greatly simplify the task for you.
@@ -21,12 +29,12 @@ It would be nice to have a light-weight tool to harness SQL with the following f
 The following example shows how easily to access DB using SOAR. Assuming you have a table called 'Person', consider the sample code below:
 
     var  soar = requrie('soarjs');
-    
+
     var  cmd = {
                 op: 'list',
                 expr: soar.sqlTemplate('Person')
                };
-               
+
     soar.execute(cmd, {age: 25}, function(err, list) {
         // list will include any person whose age is 25.
     });
@@ -34,13 +42,13 @@ The following example shows how easily to access DB using SOAR. Assuming you hav
 That's similar to issuing a SQL statement like:
 
     SELECT * FROM Person WHERE age = 25;
-    
-Unlike the sql statement, your can easily resue the command (this time with different query conditions):
+
+Unlike sql statements, your can easily resue the command (this time with different query conditions):
 
     soar.execute(cmd, {hobby: "coding"}, function(err, list) {
         // list persons whose hobby is to do coding.
     });
-    
+
 
 ## What's New
 
@@ -165,29 +173,29 @@ If you'll use SQL templates instead of data views to access databases, you can o
 
 <a name="accessDB"></a>
 ## Access Database
-SOAR offers two types of programming styles to access databases: using sql templates or "Data View" XML definitions. 
+SOAR offers two types of programming styles to access databases: using sql templates or "Data View" XML definitions.
 
 <a name="dynamicSQL"></a>
 ### Access with SQL Templates
 SQL templates allow you to compose and reuse SQL queries in a clean and managable way. Let's start with an example:
 
     var  soar = require('soarjs');
-    
+
     var  stmp = soar.sqlTemplate('Person')
                     .column(['id', 'addr AS address', 'age'])
                     .filter( {name: 'age', op: '>='} )
                     .extra( 'ORDER BY id' );
-    
+
     var  cmd = {
     	    op: list,
     	    expr: stmp
          },
          query = {age: 18};
-    
+
     soar.execute(cmd, query, function(err, list) {
     	// 'list' is the query result
     });
-  
+
 _soar.sqlTempalte(tableName)_ takes a table name as its input and returns a **SQL Template** object. With SQL templates, you can add columns, set query conditions and specify addtional options. Most SQL template functions will return the template object itself, so you can chain funcion calls such that SQL queries can be composed succintly.
 
 <a name="dynamicAPI"></a>
@@ -224,7 +232,7 @@ This template function can be used to specify join conditions. Below is a sample
 
     var  stemp = soar.sqlTemplate('myTable AS myT');
     stemp.join( {table: 'Location AS loc', onWhat: 'myT.locID=loc.locID'} );
-    
+
 If you want to make multiple joins, just call _join()_ as many times as you need. The join information is also a plain object with the following properties:
 
 + table: name of the joined table.
@@ -245,7 +253,7 @@ This function is used to set query conditions (filter). The primitive format of 
 + op: what comparator to be used. It can be '>', '=' or 'IS NULL', etc.
 + noArg: when a query operation does not require argument (e.g. IS NULL), this property should be set to true.
 
-Note that this function should be called just once for each SQL templat. Otherwise the new setting will replace the old one. 
+Note that this function should be called just once for each SQL templat. Otherwise the new setting will replace the old one.
 
 <a name="sbiChainFilter"></a>
 ##### sqlTemplate.chainFilters(op, filters)
@@ -272,11 +280,11 @@ Below we'll show how to use _soar.execute()_ to do query, list, insert, update a
 If you expect a table query should return only one entity (even though there maybe multiple matches to your query), you can ask SOAR to do **query**. Below is a sample code to query a person from the Person table:
 
     var  stemp = soar.sqlTemplate('Person');
-    
-    // 'expr' is a SQL expression equivalent to 
+
+    // 'expr' is a SQL expression equivalent to
     // SELECT * FROM Person WHERE psnID=?
     var  expr = stemp.filter( {name: 'psnID', op: '='} );
-        
+
     // 'cmd' below is like a command to SOAR
     // It will query the person whose psnID is 1
     var  cmd = {
@@ -284,22 +292,22 @@ If you expect a table query should return only one entity (even though there may
             expr: expr
          },
          query = {psnID: 1};
-        
+
     // Invoke soar.execute() to get the result
     soar.execute(cmd, query, function(err, data) {
         // 'data' is the query result
     });
-    
-<a name="dynamicList"></a>    
+
+<a name="dynamicList"></a>
 ##### List
 If your query will return multiple entities, you should do a **list**. Below is a sample code to list persons whose age are over 25 from the Person table:
 
     var  stemp = soar.sqlTemplate('Person');
-    
-    // 'expr' is a SQL expression equivalent to 
+
+    // 'expr' is a SQL expression equivalent to
     // SELECT * FROM Person WHERE age > ?
     var  expr = stemp.filter( {name: 'age', op: '>'} );
-        
+
     // 'cmd' below is like a command to SOAR
     // It will list all persons whose age is greater than 25
     var  cmd = {
@@ -307,20 +315,20 @@ If your query will return multiple entities, you should do a **list**. Below is 
             expr: expr
          },
          query = {age: 25};
-        
+
     // Invoke soar.execute() to get the result
     soar.execute(cmd, query, function(err, list) {
         // 'list' is the query result
     });
 
-<a name="dynamicInsert"></a>    
+<a name="dynamicInsert"></a>
 ##### Insert
 Below is a sample code to insert to a (Person) table:
 
-    // 'expr' is a SQL expression equivalent to 
+    // 'expr' is a SQL expression equivalent to
     // INSERT INTO Person VALUES (...)
     var  expr = soar.sqlTemplate('Person');
-        
+
     // 'cmd' below is like a command to SOAR
     // It will isnert a person whose name is 'Scott Copper'
     var  cmd = {
@@ -328,7 +336,7 @@ Below is a sample code to insert to a (Person) table:
             expr: expr
          },
          data = {name: 'Scott Cooper'};
-        
+
     // Invoke soar.execute() to do the insert
     soar.execute(cmd, data, null, function(err, value) {
         // 'value' contains the primary key value of the inserted
@@ -337,16 +345,16 @@ Below is a sample code to insert to a (Person) table:
         // where 'psnID' is the primary key of the Person table
     });
 
-<a name="dynamicUpdate"></a>    
+<a name="dynamicUpdate"></a>
 ##### Update
 Below is a sample code to update a (Person) table:
 
     var  stemp = soar.sqlTemplate('Person');
-    
-    // 'expr' is a SQL expression equivalent to 
+
+    // 'expr' is a SQL expression equivalent to
     // Update Person set ... WHERE psnID=?
     var  expr = stemp.filter( {name: 'psnID', op: '='} );
-        
+
     // 'cmd' below is like a command to SOAR
     // It will update the person whose psnID is 1
     // 'data' specify the new value of the column 'name'
@@ -356,22 +364,22 @@ Below is a sample code to update a (Person) table:
          },
          data = {name: 'John Mayer'},
          query = {psnID: 1};
-        
+
     // Invoke soar.execute() to do the update
     soar.execute(cmd, data, query, function(err) {
         // you should check 'err' to see if anything goes wrong.
     });
 
-<a name="dynamicDelete"></a>    
+<a name="dynamicDelete"></a>
 ##### Delete
 Below is a sample code to do delete from a (Person) table:
 
     var  stemp = soar.sqlTemplate('Person');
-    
-    // 'expr' is a SQL expression equivalent to 
+
+    // 'expr' is a SQL expression equivalent to
     // DELETE FROM Person WHERE psnID=?
     var  expr = stemp.filter( {name: 'psnID'} );
-        
+
     // 'cmd' below is like a command to SOAR
     // It will delete the person whose psnID is 1
     var  cmd = {
@@ -379,18 +387,18 @@ Below is a sample code to do delete from a (Person) table:
             expr: expr
          },
          query = {psnID: 1};
-        
+
     // Invoke soar.execute() to do the delete
     soar.execute(cmd, query, function(err) {
         // you should check 'err' to see if anything goes wrong.
     });
-    
-<a name="transaction"></a>    
+
+<a name="transaction"></a>
 ##### Transaction
 Doing transaction is faily simple. All you need to do is to obtain a database connection and pass it to _soar.execute()_. Below is the sample code:
 
     var  expr = soar.sqlTemplate('Perons');
-    
+
     soar.getConnection( function(err, conn) {
         // remember to specify database connection in 'cmd'
         var  cmd = {
@@ -399,7 +407,7 @@ Doing transaction is faily simple. All you need to do is to obtain a database co
                 conn: conn
              },
              data = {name: 'Scott Cooper'};
-            
+
         conn.beginTransaction(function(err) {
             soar.execute(option, data, null, function(err, data) {
                 if (err)
@@ -416,7 +424,7 @@ Doing transaction is faily simple. All you need to do is to obtain a database co
                             });
                         else
                             conn.release();
-                    });		
+                    });
             });
         };
     });
@@ -465,4 +473,4 @@ That will display generated SQL along with other debug information in console.
 The SOAR package comes with some test files. To run those tests, sample data have to be built first. Inside the SOAR istallation, there is a "def" directory which includes schema.sql and sampleData.sql. Those two files can be used to build the sample data. In addition, remember to change the user name and password in your config.json file and the related database settings in the test programs.
 
 ## Database Supported
-In the current release, SOAR only supports mySQL. If you want to use SOAR for other databases such as Postgre, MS SQL server or Oracle DB, etc, you'll have to write your own SQL generator. Right now SQL generation is implemented by ./lib/sqlGenMySql.js. 
+In the current release, SOAR only supports mySQL. If you want to use SOAR for other databases such as Postgre, MS SQL server or Oracle DB, etc, you'll have to write your own SQL generator. Right now SQL generation is implemented by ./lib/sqlGenMySql.js.

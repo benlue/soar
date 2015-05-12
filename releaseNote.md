@@ -1,3 +1,9 @@
+1.2.1
+=====
++ Fixed a bug about pagination.
+
++ This is the end of the line. Switch to [sql-soar](https://www.npmjs.com/package/sql-soar) and have fun!
+
 1.2.0
 =====
 
