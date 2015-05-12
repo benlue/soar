@@ -3,7 +3,7 @@ SOAR
 ## Please use sql-soar instead
 **soarjs** was originally a Java project and I converted it to a node module a year ago. Back to the Java days, writing JDBC programs is really a pain, especially when I have to convert a result set into objects.
 
-When rewriting **soar** to work for node.js, I quickly found out object wrapping is not that a big program on node as the node-mysql module has already done that. On the other hand, generating SQL statements is still a heck of a job and that's where the **soar** project can help developers a lot.
+When rewriting **soar** to work for node.js, I quickly found out object wrapping is not that a big problem on node as the node-mysql module has already done that. On the other hand, generating SQL statements is still a heck of a job and that's where the **soar** project can help developers a lot.
 
 It seems using JSON to represent table schema is much more straight forward than using XML, so it may be a better idea to just choose JSON over XML. The **soarjs** module is clogged with the requirements to support both and it started to bug me that I cannot make the API really clean and fun to use.
 
